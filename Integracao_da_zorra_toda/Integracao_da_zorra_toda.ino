@@ -20,7 +20,7 @@ int idade;
 //volatile int bpmVetor[100];                
 //int BpmAlto;                              // Batimento mais alto
 //int BpmBaixo;                             // Batimento mais baixo
-int BpmMedio;                             // Média entre o Batimento mais alto e o mais baixo
+int bpmMedio;                             // Média entre o Batimento mais alto e o mais baixo
 
 int pulsePin = 0;                         // Cabo do sensor de batimentos conectado na porta analógica pin 0
 int fadePin = 5;                          // pin que esmaece
@@ -110,32 +110,68 @@ void setup() {
 void loop() {
 
   while(configuracao1 != 0){                        
-      Configurando(tempoAnterior);
-      movimento = detectaMovimento(movimento);
-      temperatura = SensorTemp();
-      agitacao = DetectaAgitacao(); 
-      if ((millis() - tempoAnterior) < 15000){
-        movimentoMedio = movimento/15;                          //Movimento médio é a taxa de movimento por segundo
-        Serial.println("Digite sua idade: ");
-        if (Serial.available() > 0) {                           // lê do buffer o dado recebido
-          idade = Serial.read();
-          Serial.print("idade recebida: ");                     // responde com o dado recebido:
-          Serial.println(idade);
+    Configurando(tempoAnterior);
+    movimento = detectaMovimento(movimento);
+    temperatura = SensorTemp();
+    agitacao = DetectaAgitacao(); 
+    if ((millis() - tempoAnterior) < 15000){
+      tempoAnterior= millis();
+      movimentoMedio = movimento/15;                          //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
+      movimento = 0;
+      Serial.println("Digite sua idade: ");
+      if (Serial.available() > 0) {                           // lê do buffer o dado recebido
+        idade = Serial.read();
+        Serial.print("idade recebida: ");                     // responde com o dado recebido:
+        Serial.println(idade);
       }
-        BpmMedio = mediaBpm(BPM, idade);                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
-        temperaturaMedia = temperatura; 
-
+      bpmMedio = mediaBpm(BPM, idade);                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
+      temperaturaMedia = temperatura; 
         // Passando pelo console
-           
       configuracao1 = 0;
       Serial.println("Configurado com sucesso!");
       delay(2000);
       digitalWrite(pinoLedY, 0);  
-        }
-         delay(1);                   
+    }  
+    delay(1);
+    configuracao1 = 1;                   
+  }
+  serialOutput();  
+  
+  //====================================== Árvore de decisões ======================================================
+  
+  //Aumento de 15% no batimento cardíaco
+    if(BPM >= (bpmMedio * 1.15)) {  
+      
+      //Aumento expressivo de 50%
+      if(BPM > (bpmMedio * 1.5)) {                                                        
+        
       }
-
-
-     serialOutput();       
-     configuracao1 = 1;
+      
+      //Tolerância de 15% no movimento médio
+      if(((movimento/(millis() - tempoAnterior)) < (movimentoMedio * 1.15)) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
+        
+      }   
+      
+      //Aumento de 15% no movimento médio
+      if(((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 1.15)){
+        
+      }
+      
+      //Redução de 15% no movimento médio   
+      if(((movimento/(millis() - tempoAnterior)) < (movimentoMedio * 0.85)){   
+      
+      }
+    
+    
+    }
+         
+    //Tolerância de 15% no BPM       
+    if((BPM < (bpmMedio * 1.15)) && (BPM >= (bpmMedio * 0.85))){ 
+   
+  }
+  
+    //Queda de 15% no BPM       
+    if(BPM < (bpmMedio * 0.85)) {   
+    
+    }
 }
