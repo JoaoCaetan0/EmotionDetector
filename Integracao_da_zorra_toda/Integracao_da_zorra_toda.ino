@@ -143,8 +143,38 @@ void loop() {
     if(BPM >= (bpmMedio * 1.15)) {  
       
       //Aumento expressivo de 50%
-      if(BPM > (bpmMedio * 1.5)) {                                                        
+      if(BPM > (bpmMedio * 1.5)) {
+        float acompanhamentoExpressivo = 0;
+        int controle = 0;//Variável para monitorar a variação nociva
+        while (int controle < 100){             //Monitoramento dedicado de 5 segundos armazenando 100 leituras
+          acompanhamentoExpressivo= BPM + acompanhamentoExpressivo;
+          controle++;
+          delay(50);                            //delay de 50ms 
+        }
+        if (acompanhamentoExpressivo/100 < bpmMedio * 1.45){
+        break;
+        }
+        else {       
+          if (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 1.15)){
+          
+            if (temperatura > temperaturaMedia * 1.05){
+              if(temperatura >= temperaturaMedia * 1.20){
+                // if(agitacao)  Se todos derem true, a pessoa está se movendo. Sem emoções detectáveis
+              }
+              else{
+              Serial.println("Raiva detectada!");
+              }
+            }
+            else{               //Temperatura não aumentou
+            Serial.println("Ansiedade detectada!");
+            }
         
+          }
+          else{                 //movimento não aumentou
+            Serial.println("Felicidade Detectada!");
+          }
+         }
+        }
       }
       
       //Tolerância de 15% no movimento médio
