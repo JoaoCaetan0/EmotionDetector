@@ -9,7 +9,7 @@ const int pinoLedY = 13;                   //PINO DIGITAL UTILIZADO PELO LED
 const int pinoLedR = 11;
 const int pinoLedB = 10;
 
-unsigned long int tempoAnterior = -1000;
+unsigned long tempoAnterior = 0;
 
 int idade;
 
@@ -18,8 +18,8 @@ int idade;
 
 //int controleBpm = 0;
 //volatile int bpmVetor[100];                
-//int BpmAlto;                              // Batimento mais alto
-//int BpmBaixo;                             // Batimento mais baixo
+//int BpmAlto;                            // Batimento mais alto
+//int BpmBaixo;                           // Batimento mais baixo
 int bpmMedio;                             // Média entre o Batimento mais alto e o mais baixo
 
 int pulsePin = 0;                         // Cabo do sensor de batimentos conectado na porta analógica pin 0
@@ -27,12 +27,12 @@ int fadePin = 5;                          // pin que esmaece
 int fadeRate = 0;                         // define a frequência de esmaecimento do LED
 static int outputType = SERIAL_PLOTTER;
 volatile int rate[10];                    // array to hold last ten IBI values
-volatile unsigned long sampleCounter = 0;          // used to determine pulse timing
-volatile unsigned long lastBeatTime = 0;           // used to find IBI
+volatile unsigned long sampleCounter = 0; // used to determine pulse timing
+volatile unsigned long lastBeatTime = 0;  // used to find IBI
 volatile int P =512;                      // used to find peak in pulse wave, seeded
 volatile int T = 512;                     // used to find trough in pulse wave, seeded
 volatile int thresh = 530;                // used to find instant moment of heart beat, seeded
-volatile int amp = 0;                   // used to hold amplitude of pulse waveform, seeded
+volatile int amp = 0;                     //used to hold amplitude of pulse waveform, seeded
 volatile boolean firstBeat = true;        // used to seed rate array so we startup with reasonable BPM
 volatile boolean secondBeat = false;      // used to seed rate array so we startup with reasonable BPM
 volatile int BPM;                         // int para o valor da leitura do sensor. Atualiza a cada 2mS
@@ -81,7 +81,7 @@ char tmp_str[7]; // temporary variable used in convert function
                           
 
 void setup() {
-
+  interruptSetup();
   pinMode(pinoLedR,OUTPUT);
   pinMode(pinoLedY, OUTPUT);
   pinMode(pinoLedG,OUTPUT);                 // pin que pisca quando detecta um batimento!
@@ -104,17 +104,22 @@ void setup() {
   Wire.write(0x6B); // PWR_MGMT_1 register
   Wire.write(0); // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
-  interruptSetup();
+  
 }
 
-void loop() {
-
-  while(configuracao1 != 0){                        
-    Configurando(tempoAnterior);
+void loop() {                  // responde com o dado recebido:
+  
+  while(configuracao1 != 0){            
+    Serial.println(millis());          
+    Serial.println("Configurando...");
+    digitalWrite(pinoLedY, 1);
+    digitalWrite(pinoLedG, 0);
     movimento = detectaMovimento(movimento);
     temperatura = SensorTemp();
     agitacao = DetectaAgitacao(); 
+    Serial.println(configuracao1 + 500); 
     if ((millis() - tempoAnterior) < 15000){
+      Serial.print(configuracao1 + 5); 
       tempoAnterior= millis();
       movimentoMedio = movimento/15;                          //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
       movimento = 0;
@@ -146,16 +151,16 @@ void loop() {
       if(BPM > (bpmMedio * 1.5)) {
         float acompanhamentoExpressivo = 0;
         int controle = 0;//Variável para monitorar a variação nociva
-        while (int controle < 100){             //Monitoramento dedicado de 5 segundos armazenando 100 leituras
+        while ( controle < 100){             //Monitoramento dedicado de 5 segundos armazenando 100 leituras
           acompanhamentoExpressivo= BPM + acompanhamentoExpressivo;
           controle++;
           delay(50);                            //delay de 50ms 
         }
         if (acompanhamentoExpressivo/100 < bpmMedio * 1.45){
-        break;
+        //return false;
         }
         else {       
-          if (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 1.15)){
+          if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
           
             if (temperatura > temperaturaMedia * 1.05){
               if(temperatura >= temperaturaMedia * 1.20){
@@ -178,22 +183,20 @@ void loop() {
       }
       
       //Tolerância de 15% no movimento médio
-      if(((movimento/(millis() - tempoAnterior)) < (movimentoMedio * 1.15)) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
+      if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
         
       }   
       
       //Aumento de 15% no movimento médio
-      if(((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 1.15)){
+      if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
         
       }
       
       //Redução de 15% no movimento médio   
-      if(((movimento/(millis() - tempoAnterior)) < (movimentoMedio * 0.85)){   
+      if(((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){   
       
       }
     
-    
-    }
          
     //Tolerância de 15% no BPM       
     if((BPM < (bpmMedio * 1.15)) && (BPM >= (bpmMedio * 0.85))){ 
