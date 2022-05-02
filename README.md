@@ -7,3 +7,6 @@ Respective models of each:
 - RCWL-0516 (Microwave)
 - MPU6050-GY521 (Acelerometer)
 - LM35Z (Temperature)
+- ESP01 8266
+
+All the components and the circuit can be visualized on the "Circuit_drawn.png" and "Circuit_Pictures.png". Also, there's another repository containing all the web-part of the project, including HTML, CSS and PHP.
