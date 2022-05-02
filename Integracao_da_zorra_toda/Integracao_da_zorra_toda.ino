@@ -141,8 +141,12 @@ void loop() {                  // responde com o dado recebido:
     configuracao1 = 1;                   
   }
   serialOutput();  
-  
+
   //====================================== Árvore de decisões ======================================================
+  
+   float acompanhamentoExpressivo = 0;
+   int controle = 0;//Variável para monitorar a variação nociva
+  
   
   //Aumento de 15% no batimento cardíaco
     if(BPM >= (bpmMedio * 1.15)) {  
@@ -180,6 +184,8 @@ void loop() {                  // responde com o dado recebido:
           }
          }
         }
+      acompanhamentoExpressivo = 0;
+      controle = 0;
       }
       
       //Tolerância de 15% no movimento médio
@@ -200,11 +206,46 @@ void loop() {                  // responde com o dado recebido:
          
     //Tolerância de 15% no BPM       
     if((BPM < (bpmMedio * 1.15)) && (BPM >= (bpmMedio * 0.85))){ 
+      
    
   }
   
     //Queda de 15% no BPM       
-    if(BPM < (bpmMedio * 0.85)) {   
+    if(BPM < (bpmMedio * 0.85)) {
+      
+      //Tolerância de 15% no movimento médio
+      if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
+        Serial.println("Calmo");
+        }  
+      
+      //Aumento de 15% no movimento médio
+      if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+        
+        //Aumento nocivo no movimento médio
+        if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.5)){
+          
+          while ( controle < 100){             //Monitoramento dedicado de 5 segundos armazenando 100 leituras
+            movimento = detectaMovimento(movimento);
+            acompanhamentoExpressivo= movimento + acompanhamentoExpressivo;
+            controle++;
+            delay(50);                            //delay de 50ms 
+        }
+          
+          //Aumento definitivo constatado
+        if ((acompanhamentoExpressivo/100) >= (movimentoMedio * 1.45)){
+          Serial.println("Ansiedade detectada!");
+        }
+
+        }
+        else{
+        Serial.println("Calmo");
+        }
+      }
+      
+      //Redução de 15% no movimento médio   
+      if(((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){   
+        Serial.println("Calmo");
+      }
     
     }
 }
