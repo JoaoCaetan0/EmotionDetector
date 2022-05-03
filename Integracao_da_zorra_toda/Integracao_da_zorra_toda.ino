@@ -151,6 +151,7 @@ void loop() {                  // responde com o dado recebido:
   //Aumento de 15% no batimento cardíaco
     if(BPM >= (bpmMedio * 1.15)) {  
       
+      
       //Aumento expressivo de 50%
       if(BPM > (bpmMedio * 1.5)) {
         float acompanhamentoExpressivo = 0;
@@ -167,6 +168,9 @@ void loop() {                  // responde com o dado recebido:
           if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
           
             if (temperatura > temperaturaMedia * 1.05){
+                movimento = detectaMovimento(movimento); //Reseta variáveis
+                temperatura = SensorTemp();
+                agitacao = DetectaAgitacao(); 
               if(temperatura >= temperaturaMedia * 1.20){
                 // if(agitacao)  Se todos derem true, a pessoa está se movendo. Sem emoções detectáveis
               }
