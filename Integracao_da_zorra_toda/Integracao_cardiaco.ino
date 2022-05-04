@@ -27,7 +27,7 @@ void serialOutput(){   // Decide How To Output Serial.
       Serial.print(",");
       Serial.println(Signal);
       break;
-    default:
+      default:
       break;
   }
 
@@ -41,7 +41,7 @@ void serialOutputWhenBeatHappens(){
       sendDataToSerial('Q',IBI);   // send time between beats with a 'Q' prefix
       break;
 
-    default:
+      default:
       break;
   }
 }
