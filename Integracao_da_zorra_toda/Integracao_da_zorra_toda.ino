@@ -16,6 +16,9 @@ int idade;
 
 /////////////////////////////////////////////////////////////////////////////////////   // SENSOR CARDIACO //   //////////////////////////////////////////////////////////////////////////////
 
+
+
+
 //int controleBpm = 0;
 //volatile int bpmVetor[100];                
 //int BpmAlto;                            // Batimento mais alto
@@ -40,6 +43,7 @@ volatile int Signal;                      // Segura os dados que serão processa
 volatile int IBI = 600;                   // int que armazena os intervalos entre as batidas!
 volatile boolean Pulse = false;           // "True" Quando uma batida é detectada. "False" quando não é
 volatile boolean QS = false;              // Recebe "True" quando uma batida é uma detectada.
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////     // FIM CARDIACO //   //////////////////////////////////////////////////////////////////
@@ -81,8 +85,8 @@ char tmp_str[7]; // temporary variable used in convert function
                           
 
 void setup() {
-  interruptSetup();
   pinMode(pinoLedR,OUTPUT);
+  interruptSetup();
   pinMode(pinoLedY, OUTPUT);
   pinMode(pinoLedG,OUTPUT);                 // pin que pisca quando detecta um batimento!
   pinMode(pinoLedB, OUTPUT);
@@ -114,17 +118,20 @@ void loop() {                  // responde com o dado recebido:
     Serial.println("Configurando...");
     digitalWrite(pinoLedY, 1);
     digitalWrite(pinoLedG, 0);
+    Serial.println(movimento);
     movimento = detectaMovimento(movimento);
+    Serial.println(movimento);
     temperatura = SensorTemp();
+    Serial.print("A temperatura é: ");
+    Serial.println(temperatura);
     agitacao = DetectaAgitacao(); 
-    Serial.println(configuracao1 + 500); 
     if ((millis() - tempoAnterior) < 15000){
       Serial.print(configuracao1 + 5); 
       tempoAnterior= millis();
       movimentoMedio = movimento/15;                          //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
       movimento = 0;
       Serial.println("Digite sua idade: ");
-      if (Serial.available() > 0) {                           // lê do buffer o dado recebido
+      while(Serial.available() > 0){                           // lê do buffer o dado recebido
         idade = Serial.read();
         Serial.print("idade recebida: ");                     // responde com o dado recebido:
         Serial.println(idade);
@@ -218,6 +225,7 @@ void loop() {                  // responde com o dado recebido:
       //Redução de 15% no movimento médio   
       if(((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){   
       
+      }
       }
     
          
