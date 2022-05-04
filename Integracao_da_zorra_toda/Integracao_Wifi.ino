@@ -1,4 +1,4 @@
-#include "WiFiEsp.h" //INCLUSÃO DA BIBLIOTECA
+/* #include "WiFiEsp.h" //INCLUSÃO DA BIBLIOTECA
 #include "SoftwareSerial.h"//INCLUSÃO DA BIBLIOTECA
  
 SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX E O PINO 7 É O TX
