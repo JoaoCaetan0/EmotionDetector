@@ -5,7 +5,7 @@ Descrição: Código responsável pelo sensor de Microondas que tem como retorno
 detecção de movimento vinda de fontes de calor próximas a ele.
 */
 
-boolean DetectaAgitacao(){
+boolean detectaAgitacao(){
   boolean resposta;
   if(digitalRead(pinoMicroondas) == HIGH){      //SE LEITURA DO PINO FOR IGUAL A HIGH, FAZ
     resposta = true; //ACENDE O LED
