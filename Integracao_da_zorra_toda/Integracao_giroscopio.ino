@@ -1,7 +1,3 @@
-
-
-
-
 char* convert_int16_to_str(int16_t i) { // converts int16 to string. Moreover, resulting strings will have the same length in the debug monitor.
   sprintf(tmp_str, "%6d", i);
   return tmp_str;
@@ -24,43 +20,42 @@ int detectaMovimento(int movimento) { // Função que contabiliza quantos movime
   gyro_y = Wire.read()<<8 | Wire.read(); // reading registers: 0x45 (GYRO_YOUT_H) and 0x46 (GYRO_YOUT_L)
   gyro_z = Wire.read()<<8 | Wire.read(); // reading registers: 0x47 (GYRO_ZOUT_H) and 0x48 (GYRO_ZOUT_L)
 
-  while ((millis() - tempoAnterior) < 250){
+
   if (accelerometer_x < 1000 && accelerometer_y < -8000) {        // pra cima
     digitalWrite(LED_LB, 0);
     digitalWrite(LED_RB, 0);
     digitalWrite(LED_RT, 1);
     digitalWrite(LED_LT, 1);
     movimento = movimento + 1;
-    tempoAnterior = millis();
+
   } else if (accelerometer_x < 1000 && accelerometer_y > 8000) {    // pra baixo
     digitalWrite(LED_LB, 1);
     digitalWrite(LED_RB, 1);
     digitalWrite(LED_RT, 0);
     digitalWrite(LED_LT, 0);
     movimento = movimento + 1;
-    tempoAnterior = millis();
+
   } else if (accelerometer_x > 8000 && accelerometer_y < 1000) {     // pra direita
     digitalWrite(LED_LB, LOW);
     digitalWrite(LED_RB, HIGH);
     digitalWrite(LED_RT, HIGH);
     digitalWrite(LED_LT, LOW);
     movimento = movimento + 1;
-    tempoAnterior = millis();
+
   } else if (accelerometer_x < -8000 && accelerometer_y < 1000) {     // pra esquerda
     digitalWrite(LED_LB, HIGH);
     digitalWrite(LED_RB, LOW);
     digitalWrite(LED_RT, LOW);
     digitalWrite(LED_LT, HIGH);
     movimento = movimento + 1;
-    tempoAnterior = millis();
+
   } else {
     digitalWrite(LED_LB, LOW);
     digitalWrite(LED_RB, LOW);
     digitalWrite(LED_RT, LOW);
     digitalWrite(LED_LT, LOW);
     // Não se mexeu
-    tempoAnterior = millis();
-  }
+
   }
 return movimento;
 }
