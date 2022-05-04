@@ -195,7 +195,20 @@ void loop() {                  // responde com o dado recebido:
       //Tolerância de 15% no movimento médio
       if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
         
-      }   
+        //aumento de 5% na temperatura média
+      if (temperatura > temperaturaMedia * 1.05){
+        movimento = detectaMovimento(movimento);  //Reseta variáveis
+        temperatura = SensorTemp();
+        agitacao = DetectaAgitacao(); 
+        
+      }
+        
+       if (temperatura <= temperaturaMedia * 0.95){
+       movimento = detectaMovimento(movimento);   //Reseta variáveis
+       temperatura = SensorTemp();
+       agitacao = DetectaAgitacao();
+         
+      }
       
       //Aumento de 15% no movimento médio
       if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
@@ -220,7 +233,7 @@ void loop() {                  // responde com o dado recebido:
       //Tolerância de 15% no movimento médio
       if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
         Serial.println("Calmo");
-        }  
+      }  
       
       //Aumento de 15% no movimento médio
       if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
