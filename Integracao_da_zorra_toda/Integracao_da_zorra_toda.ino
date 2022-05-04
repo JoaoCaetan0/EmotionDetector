@@ -160,16 +160,84 @@ void loop() {                  // responde com o dado recebido:
       
       
       //Aumento expressivo de 50%
-      if(BPM > (bpmMedio * 1.5)) {
+      if(BPM > (bpmMedio * 1.5)) {     
+        
         float acompanhamentoExpressivo = 0;
         int controle = 0;//Variável para monitorar a variação nociva
+        movimento = detectaMovimento(movimento); //Reseta variáveis
+        temperatura = SensorTemp();
+        agitacao = detectaAgitacao();
+        
         while ( controle < 100){             //Monitoramento dedicado de 5 segundos armazenando 100 leituras
           acompanhamentoExpressivo= BPM + acompanhamentoExpressivo;
           controle++;
           delay(50);                            //delay de 50ms 
         }
         if (acompanhamentoExpressivo/100 < bpmMedio * 1.45){
-        //Nada acontece
+
+          //Aumento de 15% na taxa de movimento
+          if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+
+
+            //Aumento de 5% na temperatura
+            if (temperatura > temperaturaMedia * 1.05){
+              movimento = detectaMovimento(movimento); //Reseta variáveis
+              temperatura = SensorTemp();
+              agitacao = detectaAgitacao(); 
+
+              //Aumento expressivo de 20% na temperatura
+              if(temperatura >= temperaturaMedia * 1.20){
+
+                //Indivíduo está agitado
+               if(detectaAgitacao(agitacao) == true){
+                Serial.println("Ansiedade detectada!");
+                }
+                else{
+                  Serial.println("Raiva detectada!");
+                }
+              }
+              else{
+                  Serial.println("Ansiedade detectada!");
+                }
+              }
+
+                         //Queda de 5% na temperatura
+            if (temperatura <= temperaturaMedia * 0.95){
+              movimento = detectaMovimento(movimento); //Reseta variáveis
+              temperatura = SensorTemp();
+              agitacao = detectaAgitacao(); 
+
+              //Queda expressivo de 20% na temperatura
+              if(temperatura <= temperaturaMedia * 0.80){
+
+                //Indivíduo está agitado
+               if(detectaAgitacao(agitacao) == true){
+                Serial.println("Ansiedade detectada!");
+                }
+                else{
+                  Serial.println("Calma detectada!");
+                }
+              }
+              
+
+              }
+
+
+              //Tolerância de Temperatura:
+
+
+
+              
+              Serial.println("Felicidade detectada!");
+            }
+
+          //Tolerância de 15% no movimento
+          if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
+          
+          }  
+
+          
+          }
         }
         else {       
           if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
@@ -198,6 +266,28 @@ void loop() {                  // responde com o dado recebido:
           }
          }
         }
+        else{
+          if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+            if (temperatura > temperaturaMedia * 1.05){
+              movimento = detectaMovimento(movimento); //Reseta variáveis
+              temperatura = SensorTemp();
+              agitacao = detectaAgitacao(); 
+              if(temperatura >= temperaturaMedia * 1.20){
+               if(detectaAgitacao(agitacao) == true){
+                Serial.println("Ansiedade detectada!");
+                }
+                else{
+                  Serial.println("Raiva detectada!");
+                }
+              }
+              else{
+                  Serial.println("Ansiedade detectada!");
+                }
+              }
+              Serial.println("Felicidade detectada!");
+            } 
+        }
+        
       acompanhamentoExpressivo = 0;
       controle = 0;
       }
@@ -206,19 +296,19 @@ void loop() {                  // responde com o dado recebido:
       if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
         
         //aumento de 5% na temperatura média
-      if (temperatura > temperaturaMedia * 1.05){
-        movimento = detectaMovimento(movimento);  //Reseta variáveis
-        temperatura = SensorTemp();
-        agitacao = detectaAgitacao(); 
+        if (temperatura > temperaturaMedia * 1.05){
+          movimento = detectaMovimento(movimento);  //Reseta variáveis
+          temperatura = SensorTemp();
+          agitacao = detectaAgitacao(); 
+          
+        }
         
-      }
-        
-       if (temperatura <= temperaturaMedia * 0.95){
-       movimento = detectaMovimento(movimento);   //Reseta variáveis
-       temperatura = SensorTemp();
-       agitacao = detectaAgitacao();
-         
-      }
+         if (temperatura <= temperaturaMedia * 0.95){
+         movimento = detectaMovimento(movimento);   //Reseta variáveis
+         temperatura = SensorTemp();
+         agitacao = detectaAgitacao();
+           
+        }
       
       //Aumento de 15% no movimento médio
       if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
