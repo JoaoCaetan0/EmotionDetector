@@ -124,7 +124,7 @@ void loop() {                  // responde com o dado recebido:
     temperatura = SensorTemp();
     Serial.print("A temperatura é: ");
     Serial.println(temperatura);
-    agitacao = DetectaAgitacao(); 
+    agitacao = detectaAgitacao(); 
     if ((millis() - tempoAnterior) < 15000){
       Serial.print(configuracao1 + 5); 
       tempoAnterior= millis();
@@ -169,7 +169,7 @@ void loop() {                  // responde com o dado recebido:
           delay(50);                            //delay de 50ms 
         }
         if (acompanhamentoExpressivo/100 < bpmMedio * 1.45){
-        //return false;
+        //Nada acontece
         }
         else {       
           if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
@@ -177,9 +177,12 @@ void loop() {                  // responde com o dado recebido:
             if (temperatura > temperaturaMedia * 1.05){
                 movimento = detectaMovimento(movimento); //Reseta variáveis
                 temperatura = SensorTemp();
-                agitacao = DetectaAgitacao(); 
+                agitacao = detectaAgitacao(); 
               if(temperatura >= temperaturaMedia * 1.20){
-                // if(agitacao)  Se todos derem true, a pessoa está se movendo. Sem emoções detectáveis
+                if(detectaAgitacao(agitacao) == true){
+  
+                }
+                // Se todos derem true, a pessoa está se movendo. Sem emoções detectáveis
               }
               else{
               Serial.println("Raiva detectada!");
@@ -206,14 +209,14 @@ void loop() {                  // responde com o dado recebido:
       if (temperatura > temperaturaMedia * 1.05){
         movimento = detectaMovimento(movimento);  //Reseta variáveis
         temperatura = SensorTemp();
-        agitacao = DetectaAgitacao(); 
+        agitacao = detectaAgitacao(); 
         
       }
         
        if (temperatura <= temperaturaMedia * 0.95){
        movimento = detectaMovimento(movimento);   //Reseta variáveis
        temperatura = SensorTemp();
-       agitacao = DetectaAgitacao();
+       agitacao = detectaAgitacao();
          
       }
       
