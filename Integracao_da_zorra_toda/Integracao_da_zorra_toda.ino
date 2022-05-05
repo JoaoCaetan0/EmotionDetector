@@ -150,222 +150,432 @@ void loop() {                  // responde com o dado recebido:
   serialOutput();  
 
   //====================================== Árvore de decisões ======================================================
-  
-   float acompanhamentoExpressivo = 0;
-   int controle = 0;//Variável para monitorar a variação nociva
-  
-  
+  //Árvore Re-formatada
+
+  float acompanhamentoExpressivo = 0;
+  int controle = 0;//Variável para monitorar a variação nociva
+
   //Aumento de 15% no batimento cardíaco
-    if(BPM >= (bpmMedio * 1.15)) {  
-      
-      
-      //Aumento expressivo de 50%
-      if(BPM > (bpmMedio * 1.5)) {     
-        
-        float acompanhamentoExpressivo = 0;
-        int controle = 0;//Variável para monitorar a variação nociva
-        movimento = detectaMovimento(movimento); //Reseta variáveis
-        temperatura = SensorTemp();
-        agitacao = detectaAgitacao();
-        
-        while ( controle < 100){             //Monitoramento dedicado de 5 segundos armazenando 100 leituras
-          acompanhamentoExpressivo= BPM + acompanhamentoExpressivo;
-          controle++;
-          delay(50);                            //delay de 50ms 
-        }
-        if (acompanhamentoExpressivo/100 < bpmMedio * 1.45){
-
-          //Aumento de 15% na taxa de movimento
-          if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+  if(BPM >= (bpmMedio * 1.15)) {  
 
 
-            //Aumento de 5% na temperatura
-            if (temperatura > temperaturaMedia * 1.05){
-              movimento = detectaMovimento(movimento); //Reseta variáveis
-              temperatura = SensorTemp();
-              agitacao = detectaAgitacao(); 
-
-              //Aumento expressivo de 20% na temperatura
-              if(temperatura >= temperaturaMedia * 1.20){
-
-                //Indivíduo está agitado
-               if(detectaAgitacao(agitacao) == true){
-                Serial.println("Ansiedade detectada!");
-                }
-                else{
-                  Serial.println("Raiva detectada!");
-                }
-              }
-              else{
-                  Serial.println("Ansiedade detectada!");
-                }
-              }
-
-                         //Queda de 5% na temperatura
-            if (temperatura <= temperaturaMedia * 0.95){
-              movimento = detectaMovimento(movimento); //Reseta variáveis
-              temperatura = SensorTemp();
-              agitacao = detectaAgitacao(); 
-
-              //Queda expressivo de 20% na temperatura
-              if(temperatura <= temperaturaMedia * 0.80){
-
-                //Indivíduo está agitado
-               if(detectaAgitacao(agitacao) == true){
-                Serial.println("Ansiedade detectada!");
-                }
-                else{
-                  Serial.println("Calma detectada!");
-                }
-              }
-              
-
-              }
-
-
-              //Tolerância de Temperatura
-            if ((temperatura > temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
-              
-            }
-
-
-              
-              Serial.println("Felicidade detectada!");
-            }
-
-          //Tolerância de 15% no movimento
-          if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
-          
-          }  
-
-          
-          }
-        }
-        else {       
-          if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
-          
-            if (temperatura > temperaturaMedia * 1.05){
-                movimento = detectaMovimento(movimento); //Reseta variáveis
-                temperatura = SensorTemp();
-                agitacao = detectaAgitacao(); 
-              if(temperatura >= temperaturaMedia * 1.20){
-                if(detectaAgitacao(agitacao) == true){
-  
-                }
-                // Se todos derem true, a pessoa está se movendo. Sem emoções detectáveis
-              }
-              else{
-              Serial.println("Raiva detectada!");
-              }
-            }
-            else{               //Temperatura não aumentou
-            Serial.println("Ansiedade detectada!");
-            }
-        
-          }
-          else{                 //movimento não aumentou
-            Serial.println("Felicidade Detectada!");
-          }
-         }
-        }
-        else{
-          if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
-            if (temperatura > temperaturaMedia * 1.05){
-              movimento = detectaMovimento(movimento); //Reseta variáveis
-              temperatura = SensorTemp();
-              agitacao = detectaAgitacao(); 
-              if(temperatura >= temperaturaMedia * 1.20){
-               if(detectaAgitacao(agitacao) == true){
-                Serial.println("Ansiedade detectada!");
-                }
-                else{
-                  Serial.println("Raiva detectada!");
-                }
-              }
-              else{
-                  Serial.println("Ansiedade detectada!");
-                }
-              }
-              Serial.println("Felicidade detectada!");
-            } 
-        }
-        
+    //Aumento expressivo de 50%
+    if(BPM > (bpmMedio * 1.5)) {
       acompanhamentoExpressivo = 0;
-      controle = 0;
-      }
-      
-      //Tolerância de 15% no movimento médio
-      if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
-        
-        //aumento de 5% na temperatura média
-        if (temperatura > temperaturaMedia * 1.05){
-          movimento = detectaMovimento(movimento);  //Reseta variáveis
-          temperatura = SensorTemp();
-          agitacao = detectaAgitacao(); 
-          
-        }
-        
-         if (temperatura <= temperaturaMedia * 0.95){
-         movimento = detectaMovimento(movimento);   //Reseta variáveis
-         temperatura = SensorTemp();
-         agitacao = detectaAgitacao();
-           
-        }
-      
-      //Aumento de 15% no movimento médio
-      if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
-        
-      }
-      
-      //Redução de 15% no movimento médio   
-      if(((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){   
-      
-      }
-      }
-    
-         
-    //Tolerância de 15% no BPM       
-    if((BPM < (bpmMedio * 1.15)) && (BPM >= (bpmMedio * 0.85))){ 
-      
-   
-  }
-  
-    //Queda de 15% no BPM       
-    if(BPM < (bpmMedio * 0.85)) {
-      
-      //Tolerância de 15% no movimento médio
-      if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo
-        Serial.println("Calmo");
-      }  
-      
-      //Aumento de 15% no movimento médio
-      if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
-        
-        //Aumento nocivo no movimento médio
-        if(((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.5)){
-          
-          while ( controle < 100){             //Monitoramento dedicado de 5 segundos armazenando 100 leituras
-            movimento = detectaMovimento(movimento);
-            acompanhamentoExpressivo= movimento + acompanhamentoExpressivo;
-            controle++;
-            delay(50);                            //delay de 50ms 
-        }
-          
-          //Aumento definitivo constatado
-        if ((acompanhamentoExpressivo/100) >= (movimentoMedio * 1.45)){
-          Serial.println("Ansiedade detectada!");
-        }
+      controle = 0;//Variável para monitorar a variação nociva
+      movimento = detectaMovimento(movimento); //Reseta variáveis
+      temperatura = SensorTemp();
+      agitacao = detectaAgitacao();
 
-        }
-        else{
-        Serial.println("Calmo");
-        }
-      }
-      
-      //Redução de 15% no movimento médio   
-      if(((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){   
-        Serial.println("Calmo");
-      }
+      //Monitoramento dedicado de 5 segundos armazenando 100 leituras
+      while ( controle < 100){             
+        acompanhamentoExpressivo= BPM + acompanhamentoExpressivo;
+        controle++;
+        delay(50);                            //delay de 50ms 
+      } //Fecha Monitoramento
+
+
+      //Houve aumento expressivo bpm
+      if (acompanhamentoExpressivo/100 >= bpmMedio * 1.45){
+
+        //Aumento de 15% na taxa de movimento
+        if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha aumento do movimento
+
+        //Tolerância de 15% no movimento
+        if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha Tolerância de movimento
+
+        //Queda no movimento
+        if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha Não agitou
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha Queda no movimento
+
+      }//Fecha houve aumento expressivo BPM
+
+
+      //Não Houve Aumento Expressivo
+      else{
+        //Aumento de 15% na taxa de movimento
+        if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha aumento do movimento
+
+        //Tolerância de 15% no movimento
+        if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha Não agitou
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha Tolerância de movimento
+
+        //Queda no movimento
+        if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha Queda no movimento
+
+
+      } //Fecha (else) não houve aumento
+
+    }//Fecha Aumento Expressivo
+
+  }//Fecha aumento 15%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //Tolerância cardíaca
+  if((BPM < (bpmMedio * 1.15)) && (BPM >= (bpmMedio * 0.85))){
+
+  }//Fecha Tolerância cardíaca
+
+
+
+
+  //Queda de 15% no BPM
+  if(BPM < (bpmMedio * 0.85)) {
+
+
+    //Queda expressiva de 50%
+    if(BPM > (bpmMedio * 1.5)) {  
+    }//Fecha Queda Expressiva
     
-    }
-}
+  }//Fecha Queda
+  
+}//Fecha loop
+
