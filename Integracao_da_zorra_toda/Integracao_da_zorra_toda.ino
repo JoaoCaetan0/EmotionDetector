@@ -223,8 +223,10 @@ void loop() {                  // responde com o dado recebido:
               }
 
 
-              //Tolerância de Temperatura:
-
+              //Tolerância de Temperatura
+            if ((temperatura > temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+              
+            }
 
 
               
