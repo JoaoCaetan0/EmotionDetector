@@ -533,44 +533,185 @@ void loop() {                  // responde com o dado recebido:
 
     }//Fecha Aumento Expressivo
 
-  }//Fecha aumento 15%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  }//Fecha aumento cardíaco de 15%
 
   //Tolerância cardíaca
   if((BPM < (bpmMedio * 1.15)) && (BPM >= (bpmMedio * 0.85))){
+    
+    //Aumento de 15% na taxa de movimento
+        if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha aumento do movimento
+
+        //Tolerância de 15% no movimento
+        if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha Tolerância de movimento
+
+        //Queda no movimento
+        if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
+
+          //Aumento de 5% na temperatura
+          if (temperatura > temperaturaMedia * 1.05){
+            movimento = detectaMovimento(movimento); //Reseta variáveis
+            temperatura = SensorTemp();
+            agitacao = detectaAgitacao(); 
+
+            //Aumento expressivo de temperatura
+            if(temperatura >= temperaturaMedia * 1.15){
+
+              //Agitação
+              if(detectaAgitacao(agitacao) == true){
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+
+
+            }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+
+          }//Fecha aumento de temperatura
+
+          //Tolerância de temperatura
+          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação
+            //Não agitou
+            else{
+
+
+            }//Fecha Não agitou
+          }//Fecha Tolerância de temperatura
+
+          //Queda de 5% na temperatura
+          if (temperatura < temperaturaMedia * 0.95){
+
+            //Agitação
+            if(detectaAgitacao(agitacao) == true){
+
+            }//Fecha Agitação 
+            //Não agitou
+            else{
+
+
+            }//Fecha Não agitou
+
+          }//Fecha Queda de temperatura
+
+        }//Fecha Queda no movimento
 
   }//Fecha Tolerância cardíaca
-
-
-
-  
-  
-  
-  
-  
 
   //Queda de 15% no BPM
   if(BPM < (bpmMedio * 0.85)) {
@@ -953,4 +1094,3 @@ void loop() {                  // responde com o dado recebido:
   }//Fecha Queda
   
 }//Fecha loop
-
