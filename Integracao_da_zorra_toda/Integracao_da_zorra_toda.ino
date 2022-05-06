@@ -60,7 +60,7 @@ const int pinoMicroondas = 8; //PINO DIGITAL UTILIZADO PELO SENSOR
                         //int BpmH[10] = {150,80,70,0,0,0,0,0,0,0};     // Em teste
                         //int BpmL[10] = {0,0,0,0,0,0,0,0,0,0};     // Em teste
 
-int configuracao1 = 1;
+int configuracao = 0;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////    // GIROSCÓPIO //    ////////////////////////////////////////////////////////////////////////////
@@ -86,13 +86,12 @@ char tmp_str[7]; // temporary variable used in convert function
 
 void setup() {
   pinMode(pinoLedR,OUTPUT);
-  interruptSetup();
+  
   pinMode(pinoLedY, OUTPUT);
   pinMode(pinoLedG,OUTPUT);                 // pin que pisca quando detecta um batimento!
   pinMode(pinoLedB, OUTPUT);
   pinMode(fadePin,OUTPUT);                 // pin que faz o efeito de esmaecer!
   pinMode (pinoMicroondas, INPUT);         //DEFINE O PINO COMO ENTRADA
-  pinMode(pulsePin,INPUT);
   analogReference(INTERNAL);              //Referência analógica interna para maior precisão
   Serial.begin(115200);                   // velocidade de leitura do sensor
   pinMode(LED_LB, OUTPUT);
@@ -108,12 +107,13 @@ void setup() {
   Wire.write(0x6B); // PWR_MGMT_1 register
   Wire.write(0); // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
+  interruptSetup();
   
 }
 
 void loop() {                  // responde com o dado recebido:
-  
-  while(configuracao1 != 0){            
+   serialOutput();  
+  while(configuracao == 0){            
     Serial.println(millis());          
     Serial.println("Configurando...");
     digitalWrite(pinoLedY, 1);
@@ -125,30 +125,25 @@ void loop() {                  // responde com o dado recebido:
     Serial.print("A temperatura é: ");
     Serial.println(temperatura);
     agitacao = detectaAgitacao(); 
-    if ((millis() - tempoAnterior) < 15000){
-      Serial.print(configuracao1 + 5); 
+    if ((millis() - tempoAnterior) < 1000){
+      Serial.print(configuracao + 5); 
       tempoAnterior= millis();
       movimentoMedio = movimento/15;                          //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
       movimento = 0;
-      Serial.println("Digite sua idade: ");
-      while(Serial.available() > 0){                           // lê do buffer o dado recebido
-        idade = Serial.read();
-        Serial.print("idade recebida: ");                     // responde com o dado recebido:
-        Serial.println(idade);
-      }
-      bpmMedio = mediaBpm(BPM, idade);                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
+      idade = 18;
+     bpmMedio = mediaBpm(BPM, idade);                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
       temperaturaMedia = temperatura; 
         // Passando pelo console
-      configuracao1 = 0;
+      configuracao = 0;
       Serial.println("Configurado com sucesso!");
       delay(2000);
       digitalWrite(pinoLedY, 0);  
     }  
-    delay(1);
-    configuracao1 = 1;                   
+    configuracao = 1; 
+    Serial.println("pastel");                  
   }
-  serialOutput();  
-
+  Serial.print("BPM É:");
+  serialOutputWhenBeatHappens(); 
   //====================================== Árvore de decisões ======================================================
   //Árvore Re-formatada
 
@@ -192,7 +187,8 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
+                Serial.println("Sem emoção, apenas exercício!");
 
               }//Fecha Agitação
               //Não agitou
@@ -208,7 +204,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -223,7 +219,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -249,7 +245,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -266,7 +262,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -281,7 +277,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -307,7 +303,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -324,7 +320,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -338,7 +334,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -370,7 +366,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -386,7 +382,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -401,7 +397,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -427,7 +423,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -444,7 +440,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -458,7 +454,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -484,7 +480,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -501,7 +497,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -515,7 +511,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -552,7 +548,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -568,7 +564,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -583,7 +579,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -609,7 +605,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -626,7 +622,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -641,7 +637,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -667,7 +663,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -684,7 +680,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -698,7 +694,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -749,7 +745,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -765,7 +761,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -780,7 +776,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -806,7 +802,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -823,7 +819,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -838,7 +834,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -864,7 +860,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -881,7 +877,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -895,7 +891,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -927,7 +923,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -943,7 +939,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -958,7 +954,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -984,7 +980,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -1001,7 +997,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -1015,7 +1011,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
@@ -1041,7 +1037,7 @@ void loop() {                  // responde com o dado recebido:
             if(temperatura >= temperaturaMedia * 1.15){
 
               //Agitação
-              if(detectaAgitacao(agitacao) == true){
+              if(detectaAgitacao() == true){
 
               }//Fecha Agitação
               //Não agitou
@@ -1058,7 +1054,7 @@ void loop() {                  // responde com o dado recebido:
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação
             //Não agitou
@@ -1072,7 +1068,7 @@ void loop() {                  // responde com o dado recebido:
           if (temperatura < temperaturaMedia * 0.95){
 
             //Agitação
-            if(detectaAgitacao(agitacao) == true){
+            if(detectaAgitacao() == true){
 
             }//Fecha Agitação 
             //Não agitou
