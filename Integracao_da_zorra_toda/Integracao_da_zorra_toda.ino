@@ -144,6 +144,15 @@ void loop() {                  // responde com o dado recebido:
   }
   Serial.print("BPM É:");
   serialOutputWhenBeatHappens(); 
+  digitalWrite(pinoLedB, HIGH);
+  digitalWrite(pinoLedY, HIGH);
+  digitalWrite(pinoLedG, HIGH);
+  digitalWrite(pinoLedR, HIGH);
+  delay (1000); //Iniciando leitura
+  digitalWrite(pinoLedB, LOW);
+  digitalWrite(pinoLedY, LOW);
+  digitalWrite(pinoLedG, LOW);
+  digitalWrite(pinoLedR, LOW);
   //====================================== Árvore de decisões ======================================================
   //Árvore Re-formatada
 
@@ -531,6 +540,10 @@ void loop() {                  // responde com o dado recebido:
 
   }//Fecha aumento cardíaco de 15%
 
+/*
+ * --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+
   //Tolerância cardíaca
   if((BPM < (bpmMedio * 1.15)) && (BPM >= (bpmMedio * 0.85))){
     
@@ -549,15 +562,48 @@ void loop() {                  // responde com o dado recebido:
 
               //Agitação
               if(detectaAgitacao() == true){
+                
+              Serial.println("Estresse");
+              Serial.println();
+              digitalWrite(pinoLedR, HIGH); //Acende o Led Vermelho
+              delay(3000);
 
               }//Fecha Agitação
               //Não agitou
             else{
-
+              
+              Serial.println("Ansiedade");
+              Serial.println();
+              digitalWrite(pinoLedY, HIGH); //Acende o Led Amarelo
+              delay(3000);
 
             }//Fecha (else) Não agitou
 
             }//Fecha aumento expressivo de temperatura
+
+            //Não Houve Aumento expressivo de temperatura
+            else {
+
+              //Agitação
+              if(detectaAgitacao() == true){
+                
+              Serial.println("Ansieade");
+              Serial.println();
+              digitalWrite(pinoLedY, HIGH); //Acende o Led Amarelo
+              delay(3000);
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+              
+              Serial.println("Estresse");
+              Serial.println();
+              digitalWrite(pinoLedR, HIGH); //Acende o Led Vermelho
+              delay(3000);
+
+            }//Fecha (else) Não agitou
+              
+              }//Fecha não houve aumento expressivo de temperatura
           }//Fecha aumento de temperatura
 
           //Tolerância de temperatura
@@ -565,11 +611,18 @@ void loop() {                  // responde com o dado recebido:
 
             //Agitação
             if(detectaAgitacao() == true){
+              Serial.println("Calmo");
+              Serial.println();
+              digitalWrite(pinoLedB, HIGH); //Acende o Led Azul
+              delay(3000);
 
             }//Fecha Agitação
             //Não agitou
             else{
-
+              Serial.println("Calmo");
+              Serial.println();
+              digitalWrite(pinoLedB, HIGH); //Acende o Led Azul
+              delay(3000);
 
             }//Fecha (else) Não agitou
 
@@ -580,11 +633,18 @@ void loop() {                  // responde com o dado recebido:
 
             //Agitação
             if(detectaAgitacao() == true){
+              Serial.println("Felicidade");
+              Serial.println();
+              digitalWrite(pinoLedG, HIGH); //Acende o Led Verde
+              delay(3000);
 
             }//Fecha Agitação 
             //Não agitou
             else{
-
+              Serial.println("Calmo");
+              Serial.println();
+              digitalWrite(pinoLedB, HIGH); //Acende o Led Azul
+              delay(3000);
 
             }//Fecha (else) Não agitou
 
@@ -606,15 +666,47 @@ void loop() {                  // responde com o dado recebido:
 
               //Agitação
               if(detectaAgitacao() == true){
+                Serial.println("Estresse");
+                Serial.println();
+                digitalWrite(pinoLedR, HIGH); //Acende o Led Vermelho
+                delay(3000);
+
+              }//Fecha Agitação
+              //Não agitou
+              else{
+                Serial.println("Ansiedade");
+                Serial.println();
+                digitalWrite(pinoLedY, HIGH); //Acende o Led Amarelo
+                delay(3000);
+
+
+              }//Fecha (else) Não agitou
+
+            }//Fecha aumento expressivo de temperatura
+
+              //Não Houve Aumento expressivo de temperatura
+            else {
+
+              //Agitação
+              if(detectaAgitacao() == true){
+                
+              Serial.println("Felicidade");
+              Serial.println();
+              digitalWrite(pinoLedG, HIGH); //Acende o Led Verde
+              delay(3000);
 
               }//Fecha Agitação
               //Não agitou
             else{
-
+              
+              Serial.println("Ansiedade");
+              Serial.println();
+              digitalWrite(pinoLedY, HIGH); //Acende o Led Amarelo
+              delay(3000);
 
             }//Fecha (else) Não agitou
-
-            }//Fecha aumento expressivo de temperatura
+              
+              }//Fecha não houve aumento expressivo de temperatura
 
           }//Fecha aumento de temperatura
 
@@ -623,10 +715,18 @@ void loop() {                  // responde com o dado recebido:
 
             //Agitação
             if(detectaAgitacao() == true){
+              Serial.println("Felicidade");
+              Serial.println();
+              digitalWrite(pinoLedG, HIGH); //Acende o Led Verde
+              delay(3000);
 
             }//Fecha Agitação
             //Não agitou
             else{
+             Serial.println("Calmo");
+             Serial.println();
+             digitalWrite(pinoLedB, HIGH); //Acende o Led Azul
+              delay(3000);
 
 
             }//Fecha (else) Não agitou
@@ -635,20 +735,16 @@ void loop() {                  // responde com o dado recebido:
 
           //Queda de 5% na temperatura
           if (temperatura < temperaturaMedia * 0.95){
-
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação 
-            //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
+            //Agitação Indiferente neste caso
+             Serial.println("Calmo");
+             Serial.println();
+             digitalWrite(pinoLedB, HIGH); //Acende o Led Azul
+             delay(3000);
 
           }//Fecha Queda de temperatura
 
         }//Fecha Tolerância de movimento
+
 
         //Queda no movimento
         if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
@@ -664,30 +760,71 @@ void loop() {                  // responde com o dado recebido:
 
               //Agitação
               if(detectaAgitacao() == true){
+                Serial.println("Ansiedade");
+                Serial.println();
+                digitalWrite(pinoLedY, HIGH); //Acende o Led Amarelo
+                delay(3000);
 
               }//Fecha Agitação
               //Não agitou
             else{
+               Serial.println("Instabilidade fisiológica (Temperatura muito alta)");
+               Serial.println();
+               
+               for (int i = 0; i< 20; i++) {      //Pisca os LEDS Durante 10Segundos
+                 digitalWrite(pinoLedY, HIGH); //Acende o Led Amarelo
+                 digitalWrite(pinoLedR, HIGH); //Acende o Led Vermelho
+                 delay(500);
+                 digitalWrite(pinoLedY, LOW); //Acende o Led Amarelo
+                 digitalWrite(pinoLedR, LOW); //Acende o Led Vermelho
+                 movimento = detectaMovimento(movimento); //Reseta variáveis 10 vezes
+                 temperatura = SensorTemp();
+                 agitacao = detectaAgitacao(); 
+                 
+                } //Fecha o For de piscar
+
 
 
             }//Fecha (else) Não agitou
 
             }//Fecha aumento expressivo de temperatura
 
+            //Não Houve Aumento expressivo de temperatura
+            else {
+
+              //Agitação
+              if(detectaAgitacao() == true){
+                
+              Serial.println("Felicidade");
+              Serial.println();
+              digitalWrite(pinoLedG, HIGH); //Acende o Led Verde
+              delay(3000);
+
+              }//Fecha Agitação
+              //Não agitou
+            else{
+              
+              Serial.println("Calmo");
+              Serial.println();
+              digitalWrite(pinoLedB, HIGH); //Acende o Led Azul
+              delay(3000);
+
+            }//Fecha (else) Não agitou
+              
+              }//Fecha não houve aumento expressivo de temperatura
+
           }//Fecha aumento de temperatura
 
           //Tolerância de temperatura
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
-            //Agitação
-            if(detectaAgitacao() == true){
+            //Agitação Indiferente neste caso
+            Serial.println("Calmo");
+            Serial.println();
+            digitalWrite(pinoLedB, HIGH); //Acende o Led Azul
+            delay(3000);
 
-            }//Fecha Agitação
-            //Não agitou
-            else{
-
-
-            }//Fecha Não agitou
+            
           }//Fecha Tolerância de temperatura
 
           //Queda de 5% na temperatura
@@ -695,12 +832,19 @@ void loop() {                  // responde com o dado recebido:
 
             //Agitação
             if(detectaAgitacao() == true){
+              Serial.println("Felicidade");
+              Serial.println();
+              digitalWrite(pinoLedB, HIGH); //Acende o Led Verde
+              delay(3000);
 
             }//Fecha Agitação 
             //Não agitou
             else{
-
-
+              Serial.println("Calmo");
+              Serial.println();
+              digitalWrite(pinoLedB, HIGH); //Acende o Led Azul
+              delay(3000);
+              
             }//Fecha Não agitou
 
           }//Fecha Queda de temperatura
@@ -709,6 +853,11 @@ void loop() {                  // responde com o dado recebido:
 
   }//Fecha Tolerância cardíaca
 
+
+/*
+ * --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ */
+ 
   //Queda de 15% no BPM
   if(BPM < (bpmMedio * 0.85)) {
 
