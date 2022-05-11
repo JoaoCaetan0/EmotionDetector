@@ -15,34 +15,26 @@ int bpmIdade(int idade){
   return bpmEsperado;
 }
 
-
-void Configurando(unsigned long int tempoAnterior){
-  if((millis() - tempoAnterior) < 1000){
-    Serial.println("Configurando...");
-    tempoAnterior = millis();
-    digitalWrite(pinoLedY, 1);
-    digitalWrite(pinoLedG, 0);
-  }
-}
-
-int mediaBpm(int bpm, int idade){
+float mediaBpm( int idade){ 
   int controleBpm = 0;
-  volatile int bpmVetor[100];
-  int BpmMedio = 0;
+  int bpmVetor[100];
+  float BpmMedio = 0.00;
   int conf = 0;
   while (conf != 1){
-  if ((bpm > 40 && bpm < 150) && (controleBpm > 100)){                      //Limpar ruídos da medição
-    bpmVetor[controleBpm] = bpm;
+  if ((BPM > 40 && BPM < 150) && (controleBpm < 100)){                      //Limpar ruídos da medição
+    bpmVetor[controleBpm] = BPM;
     controleBpm++;
-      }                                         
-       if (bpmVetor[100] != 0){
+    conf = 1;
+      }
+      else{
+        Serial.println("Erro de leitura nos BPM: ");
+        Serial.print(BPM);                               
+      }
          int soma = 0;
          for(int i = 0; i<100; i++){
            soma = soma + bpmVetor[i];
          }
-         BpmMedio = soma/100;         //Média primária com 100 elementos
-         conf = 1;
-       }
+         BpmMedio = soma/100;         //Média primária com 100 elementos       
   }        
        BpmMedio = (bpmIdade(idade) + BpmMedio)/2;   
        return BpmMedio;

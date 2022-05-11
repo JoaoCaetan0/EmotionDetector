@@ -52,11 +52,11 @@ void sendDataToSerial(char symbol, int data ){
     Serial.println(data);
   }
 
-void ledFadeToBeat(){
+/*void ledFadeToBeat(){
     fadeRate -= 15;                         //  seta o valor de esmaecimento do LED 
     fadeRate = constrain(fadeRate,0,255);   //  impede que o valor de esmaecimento se torne negativo LED!
     analogWrite(fadePin,fadeRate);          //  fade LED
-  }
+  }*/
 
 // THIS IS THE TIMER 2 INTERRUPT SERVICE ROUTINE.
 // Timer 2 makes sure that we take a reading every 2 miliseconds
@@ -82,7 +82,7 @@ ISR(TIMER2_COMPA_vect){                         // triggered when Timer2 counts 
   if (N > 250){                                   // avoid high frequency noise
     if ( (Signal > thresh) && (Pulse == false) && (N > (IBI/5)*3) ){
       Pulse = true;                               // set the Pulse flag when we think there is a pulse
-      digitalWrite(pinoLedG,HIGH);                // turn on pin 13 LED
+      //digitalWrite(pinoLedG,HIGH);                // turn on pin 13 LED
       IBI = sampleCounter - lastBeatTime;         // measure time between beats in mS
       lastBeatTime = sampleCounter;               // keep track of time for next pulse
 
@@ -119,7 +119,7 @@ ISR(TIMER2_COMPA_vect){                         // triggered when Timer2 counts 
   }
 
   if (Signal < thresh && Pulse == true){   // when the values are going down, the beat is over
-    digitalWrite(pinoLedG,LOW);            // turn off pin 13 LED
+    //digitalWrite(pinoLedG,LOW);            // turn off pin 13 LED
     Pulse = false;                         // reset the Pulse flag so we can do it again
     amp = P - T;                           // get amplitude of the pulse wave
     thresh = amp/2 + T;                    // set thresh at 50% of the amplitude

@@ -18,12 +18,12 @@ int idade;
 
 
 
-
+int tempo = 15000; //ms
 //int controleBpm = 0;
 //volatile int bpmVetor[100];                
 //int BpmAlto;                            // Batimento mais alto
 //int BpmBaixo;                           // Batimento mais baixo
-int bpmMedio;                             // Média entre o Batimento mais alto e o mais baixo
+float bpmMedio;                             // Média entre o Batimento mais alto e o mais baixo
 
 int pulsePin = 0;                         // Cabo do sensor de batimentos conectado na porta analógica pin 0
 int fadePin = 5;                          // pin que esmaece
@@ -53,7 +53,7 @@ boolean agitacao;
 float temperatura = 0;
 float temperaturaMedia = 0;
 int movimento = 0;
-int movimentoMedio = 0;// incerto se é ou não INT --------
+int movimentoMedio = 0;
 const int pinoMicroondas = 8; //PINO DIGITAL UTILIZADO PELO SENSOR
 
                                             // Variáveis para testes
@@ -68,6 +68,9 @@ int configuracao = 0;
                           
 const int MPU_ADDR=0x68; // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
 
+int controleMovimento =0; //impedir contagem de movimentos infinitos
+int ultimoX = 0;
+int ultimoY = 0;
 int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
 int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
  int16_t temperature; // variables for temperature data
@@ -86,7 +89,6 @@ char tmp_str[7]; // temporary variable used in convert function
 
 void setup() {
   pinMode(pinoLedR,OUTPUT);
-  
   pinMode(pinoLedY, OUTPUT);
   pinMode(pinoLedG,OUTPUT);                 // pin que pisca quando detecta um batimento!
   pinMode(pinoLedB, OUTPUT);
@@ -112,38 +114,54 @@ void setup() {
 }
 
 void loop() {                  // responde com o dado recebido:
+  digitalWrite(pinoLedB, HIGH);
+  digitalWrite(pinoLedY, HIGH);
+  digitalWrite(pinoLedG, HIGH);
+  digitalWrite(pinoLedR, HIGH);
    serialOutput();  
   while(configuracao == 0){            
     Serial.println(millis());          
     Serial.println("Configurando...");
     digitalWrite(pinoLedY, 1);
-    digitalWrite(pinoLedG, 0);
-    Serial.println(movimento);
-    movimento = detectaMovimento(movimento);
-    Serial.println(movimento);
+    digitalWrite(pinoLedR, 1);
     temperatura = SensorTemp();
     Serial.print("A temperatura é: ");
     Serial.println(temperatura);
-    agitacao = detectaAgitacao(); 
-    if ((millis() - tempoAnterior) < 1000){
-      Serial.print(configuracao + 5); 
-      tempoAnterior= millis();
-      movimentoMedio = movimento/15;                          //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
-      movimento = 0;
-      idade = 18;
-     bpmMedio = mediaBpm(BPM, idade);                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
-      temperaturaMedia = temperatura; 
+    agitacao = detectaAgitacao();      
+    while ((millis() - tempoAnterior) < tempo){       //Tempo = 15seg
+      movimento = detectaMovimento(movimento);
+      //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
+     idade = 18;
+     bpmMedio = mediaBpm(idade);                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
+     temperatura = SensorTemp();
+     temperaturaMedia = temperatura; 
         // Passando pelo console
-      configuracao = 0;
-      Serial.println("Configurado com sucesso!");
-      delay(2000);
-      digitalWrite(pinoLedY, 0);  
-    }  
+    }     
+    tempoAnterior= millis();
+    Serial.println("Configurado com sucesso!");
+    delay(2000); 
+    digitalWrite(pinoLedY, 0);
+    digitalWrite(pinoLedR, 0);
+    movimentoMedio = movimento/(tempo/1000); //Tempo/1000 para igualar escala
+    Serial.println("movimentoMedio é: ");
+    Serial.println(movimentoMedio);  
+
+    Serial.println("BPM Médio é: ");
+    Serial.println(bpmMedio); 
+
+    Serial.println("Temperatura Média é: ");
+        temperatura = SensorTemp();
+     temperaturaMedia = temperatura; 
+    Serial.println(temperaturaMedia);
     configuracao = 1; 
     Serial.println("pastel");                  
   }
   Serial.print("BPM É:");
-  serialOutputWhenBeatHappens(); 
+  Serial.print(BPM); 
+  Serial.print("Temperatura É:");
+  temperatura = SensorTemp();
+  Serial.println(temperatura);
+  Serial.println(temperatura);
   digitalWrite(pinoLedB, HIGH);
   digitalWrite(pinoLedY, HIGH);
   digitalWrite(pinoLedG, HIGH);

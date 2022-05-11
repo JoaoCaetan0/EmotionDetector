@@ -4,8 +4,7 @@ char* convert_int16_to_str(int16_t i) { // converts int16 to string. Moreover, r
 }
 
 int detectaMovimento(int movimento) { // Função que contabiliza quantos movimentos ocorreram
-  unsigned long int tempoAnterior = 0;
-  
+
   Wire.beginTransmission(MPU_ADDR);
   Wire.write(0x3B); // starting with register 0x3B (ACCEL_XOUT_H) [MPU-6000 and MPU-6050 Register Map and Descriptions Revision 4.2, p.40]
   Wire.endTransmission(false); // the parameter indicates that the Arduino will send a restart. As a result, the connection is kept active.
@@ -20,42 +19,121 @@ int detectaMovimento(int movimento) { // Função que contabiliza quantos movime
   gyro_y = Wire.read()<<8 | Wire.read(); // reading registers: 0x45 (GYRO_YOUT_H) and 0x46 (GYRO_YOUT_L)
   gyro_z = Wire.read()<<8 | Wire.read(); // reading registers: 0x47 (GYRO_ZOUT_H) and 0x48 (GYRO_ZOUT_L)
 
-
-  if (accelerometer_x < 1000 && accelerometer_y < -8000) {        // pra cima
+  //Serial.print("x: ");
+  //Serial.println(accelerometer_x);
+  //Serial.print("y: ");
+  //Serial.println(accelerometer_y);
+  if (accelerometer_x < 1750 && accelerometer_y < -1750) {        // pra direita
     digitalWrite(LED_LB, 0);
     digitalWrite(LED_RB, 0);
     digitalWrite(LED_RT, 1);
     digitalWrite(LED_LT, 1);
-    movimento = movimento + 1;
 
-  } else if (accelerometer_x < 1000 && accelerometer_y > 8000) {    // pra baixo
+        //Serial.print("x: ");
+    //Serial.println(accelerometer_x);
+        //Serial.print("y: ");
+    //Serial.println(accelerometer_y);
+    
+    if(controleMovimento == 1){
+      if((accelerometer_x < (ultimoX * 0.5)) || (accelerometer_y < (ultimoY * 1.5))){
+        movimento = movimento + 1;
+        //Serial.println("movimento 1");
+        //Serial.println(movimento);
+      }
+    }
+    else{
+      movimento = movimento + 1;
+      }
+    
+    ultimoX = accelerometer_x;
+    ultimoY = accelerometer_y;
+    
+    controleMovimento =1;
+
+  } else if (accelerometer_x > 1750 && accelerometer_y > 1750) {    // pra baixo
     digitalWrite(LED_LB, 1);
     digitalWrite(LED_RB, 1);
     digitalWrite(LED_RT, 0);
     digitalWrite(LED_LT, 0);
-    movimento = movimento + 1;
+        //Serial.print("x: ");
+    //Serial.println(accelerometer_x);
+        //Serial.print("y: ");
+    //Serial.println(accelerometer_y);
 
-  } else if (accelerometer_x > 8000 && accelerometer_y < 1000) {     // pra direita
+    if(controleMovimento == 2){
+      if((accelerometer_x > (ultimoX * 1.5)) || (accelerometer_y > (ultimoY * 1.5))){
+        //Serial.println("movimento 2");
+        movimento = movimento + 1;
+        //Serial.println(movimento);
+      }
+    }
+    else{
+      movimento = movimento + 1;
+      //Serial.println("movimento2");
+      //Serial.println(movimento);
+      }
+    
+    ultimoX = accelerometer_x;
+    ultimoY = accelerometer_y;
+    
+    controleMovimento = 2;
+
+  } else if (accelerometer_x > 1750 && accelerometer_y < 1750){     // pra direita
     digitalWrite(LED_LB, LOW);
     digitalWrite(LED_RB, HIGH);
     digitalWrite(LED_RT, HIGH);
     digitalWrite(LED_LT, LOW);
-    movimento = movimento + 1;
+    //Serial.print("x: ");
+    //Serial.println(accelerometer_x);
+        //Serial.print("y: ");
+    //Serial.println(accelerometer_y);
 
-  } else if (accelerometer_x < -8000 && accelerometer_y < 1000) {     // pra esquerda
+    if(controleMovimento == 3){
+      if((accelerometer_x > (ultimoX * 1.5)) || (accelerometer_y < (ultimoY * 0.5))){
+        movimento = movimento + 1;
+        //Serial.println("movimento3");
+        //Serial.println(movimento);
+      }
+    }
+    else{
+      //Serial.println("movimento3");
+      //Serial.println(movimento);
+      movimento = movimento + 1;
+      }
+    
+    ultimoX = accelerometer_x;
+    ultimoY = accelerometer_y;
+    
+    controleMovimento = 3;
+
+  } else if (accelerometer_x < -1750 && accelerometer_y > 1750) {     // pra esquerda
     digitalWrite(LED_LB, HIGH);
     digitalWrite(LED_RB, LOW);
     digitalWrite(LED_RT, LOW);
     digitalWrite(LED_LT, HIGH);
-    movimento = movimento + 1;
+    //Serial.print("x: ");
+    //Serial.println(accelerometer_x);
+        //Serial.print("y: ");
+    //Serial.println(accelerometer_y);
 
-  } else {
-    digitalWrite(LED_LB, LOW);
-    digitalWrite(LED_RB, LOW);
-    digitalWrite(LED_RT, LOW);
-    digitalWrite(LED_LT, LOW);
-    // Não se mexeu
-
+    if(controleMovimento == 4){
+      if((accelerometer_x < (ultimoX * 0.5)) || (accelerometer_y > (ultimoY * 1.5))){
+        movimento = movimento + 1;
+        //Serial.println("movimento4");
+        //Serial.println(movimento);
+      }
+    }
+    else{
+      movimento = movimento + 1;
+        //Serial.println("movimento4");
+        //Serial.println(movimento);
+      }
+    
+    ultimoX = accelerometer_x;
+    ultimoY = accelerometer_y;
+    
+    controleMovimento = 4;
   }
+  
 return movimento;
 }
