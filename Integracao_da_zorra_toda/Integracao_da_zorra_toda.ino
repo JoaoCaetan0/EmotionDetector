@@ -201,7 +201,7 @@ void loop() {                  // responde com o dado recebido:
       if (acompanhamentoExpressivo/100 >= bpmMedio * 1.45){
 
         //Aumento de 15% na taxa de movimento
-        if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+        if (((movimento/((millis() - tempoAnterior))/1000)) >= (movimentoMedio * 1.15)){
 
 
           //Aumento de 5% na temperatura
@@ -260,7 +260,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha aumento do movimento
 
         //Tolerância de 15% no movimento
-        if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
+        if(((movimento/((millis() - tempoAnterior)/1000)) < ((movimentoMedio * 1.15))) && (((movimento/((millis() - tempoAnterior)/1000)) >= (movimentoMedio * 0.85)))){          //Movimento/(- tempoAnterior) é o movimento pelo tempo         
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -318,7 +318,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha Tolerância de movimento
 
         //Queda no movimento
-        if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) < (movimentoMedio * 0.85)){
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -380,7 +380,7 @@ void loop() {                  // responde com o dado recebido:
       //Não Houve Aumento Expressivo
       else{
         //Aumento de 15% na taxa de movimento
-        if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) >= (movimentoMedio * 1.15)){
 
 
           //Aumento de 5% na temperatura
@@ -438,7 +438,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha aumento do movimento
 
         //Tolerância de 15% no movimento
-        if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
+        if(((movimento/((millis() - tempoAnterior))) < ((movimentoMedio * 1.15))) && (((movimento/((millis() - tempoAnterior)/1000)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -495,7 +495,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha Tolerância de movimento
 
         //Queda no movimento
-        if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) < (movimentoMedio * 0.85)){
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -566,7 +566,7 @@ void loop() {                  // responde com o dado recebido:
   if((BPM < (bpmMedio * 1.15)) && (BPM >= (bpmMedio * 0.85))){
     
     //Aumento de 15% na taxa de movimento
-        if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) >= (movimentoMedio * 1.15)){
 
 
           //Aumento de 5% na temperatura
@@ -671,7 +671,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha aumento do movimento
 
         //Tolerância de 15% no movimento
-        if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
+        if(((movimento/((millis() - tempoAnterior)/1000)) < ((movimentoMedio * 1.15))) && (((movimento/((millis() - tempoAnterior)/1000)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -765,7 +765,7 @@ void loop() {                  // responde com o dado recebido:
 
 
         //Queda no movimento
-        if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) < (movimentoMedio * 0.85)){
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -899,7 +899,7 @@ void loop() {                  // responde com o dado recebido:
       if (acompanhamentoExpressivo/100 <= bpmMedio * 0.65){
 
         //Aumento de 15% na taxa de movimento
-        if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) >= (movimentoMedio * 1.15)){
 
 
           //Aumento de 5% na temperatura
@@ -957,7 +957,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha aumento do movimento
 
         //Tolerância de 15% no movimento
-        if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
+        if(((movimento/((millis() - tempoAnterior)/1000)) < ((movimentoMedio * 1.15))) && (((movimento/((millis() - tempoAnterior)/1000)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -1015,7 +1015,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha Tolerância de movimento
 
         //Queda no movimento
-        if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) < (movimentoMedio * 0.85)){
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -1077,7 +1077,7 @@ void loop() {                  // responde com o dado recebido:
       //Não Houve queda Expressivo
       else{
         //Aumento de 15% na taxa de movimento
-        if (((movimento/(millis() - tempoAnterior))) >= (movimentoMedio * 1.15)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) >= (movimentoMedio * 1.15)){
 
 
           //Aumento de 5% na temperatura
@@ -1135,7 +1135,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha aumento do movimento
 
         //Tolerância de 15% no movimento
-        if(((movimento/(millis() - tempoAnterior)) < ((movimentoMedio * 1.15))) && (((movimento/(millis() - tempoAnterior)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
+        if(((movimento/((millis() - tempoAnterior)/1000)) < ((movimentoMedio * 1.15))) && (((movimento/((millis() - tempoAnterior)/1000)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -1192,7 +1192,7 @@ void loop() {                  // responde com o dado recebido:
         }//Fecha Tolerância de movimento
 
         //Queda no movimento
-        if (((movimento/(millis() - tempoAnterior))) < (movimentoMedio * 0.85)){
+        if (((movimento/((millis() - tempoAnterior)/1000))) < (movimentoMedio * 0.85)){
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
