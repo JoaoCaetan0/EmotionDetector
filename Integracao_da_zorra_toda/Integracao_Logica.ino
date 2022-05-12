@@ -39,3 +39,18 @@ float mediaBpm( int idade){
        BpmMedio = (bpmIdade(idade) + BpmMedio)/2;   
        return BpmMedio;
 }
+
+void ledPiscando(int led){
+  
+  //desliga os leds
+  for(int i = 10; i <= 13; i++){
+    digitaWrite(i, 0);
+  }
+  
+  //Pisca o led 20 vezes
+  for(int i = 0; i < 20; i++){
+    digitalWrite(led, 1);
+    delay(250);
+    digitalWrite(led, 0);
+    }
+}
