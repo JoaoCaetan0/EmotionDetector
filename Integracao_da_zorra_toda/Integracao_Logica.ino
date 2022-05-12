@@ -40,7 +40,7 @@ float mediaBpm( int idade){
        return BpmMedio;
 }
 
-void ledPiscando(int led){
+void piscaLed(int led){
   
   //desliga os leds
   for(int i = 10; i <= 13; i++){
