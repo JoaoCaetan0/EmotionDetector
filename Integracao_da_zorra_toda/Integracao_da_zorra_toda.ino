@@ -215,11 +215,15 @@ void loop() {                  // responde com o dado recebido:
 
               //Agitação
               if(detectaAgitacao() == true){
-                Serial.println("Sem emoção, apenas exercício!");
+                Serial.println("Sem emoção, apenas exercício físico!");
+                piscaLed(pinoLedR);
+                
 
               }//Fecha Agitação
               //Não agitou
             else{
+              Serial.println("Aumento muito intenso de atividade corporal. Você está se exercitando?");
+              piscaLed(pinoLedB);
 
 
             }//Fecha (else) Não agitou
@@ -232,10 +236,16 @@ void loop() {                  // responde com o dado recebido:
 
             //Agitação
             if(detectaAgitacao() == true){
+              Serial.println("Estresse detectado!");
+              digitalWrite(pinoLedR, HIGH);
+              delay(3000);
 
             }//Fecha Agitação
             //Não agitou
             else{
+              Serial.println("Ansiedade detectada!");
+              digitalWrite(pinoLedY, HIGH);
+              delay(3000);
 
 
             }//Fecha (else) Não agitou
