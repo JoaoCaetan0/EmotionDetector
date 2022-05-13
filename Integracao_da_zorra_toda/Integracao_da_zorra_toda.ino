@@ -892,7 +892,6 @@ void loop() {                  // responde com o dado recebido:
             else{
               
               Serial.println("Calmo");
-              Serial.println();
               ligaLed(pinoLedB); //Acende o Led Azul
               //Liga o Led
 
@@ -907,7 +906,6 @@ void loop() {                  // responde com o dado recebido:
 
             //Agitação Indiferente neste caso
             Serial.println("Calmo");
-            Serial.println();
             ligaLed(pinoLedB); //Acende o Led Azul
             //Liga o Led
 
@@ -920,7 +918,6 @@ void loop() {                  // responde com o dado recebido:
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade");
-              Serial.println();
               ligaLed(pinoLedB); //Acende o Led Verde
               //Liga o Led
 
@@ -928,7 +925,6 @@ void loop() {                  // responde com o dado recebido:
             //Não agitou
             else{
               Serial.println("Calmo");
-              Serial.println();
               ligaLed(pinoLedB); //Acende o Led Azul
               //Liga o Led
               
@@ -948,25 +944,6 @@ void loop() {                  // responde com o dado recebido:
   //Queda de 15% no BPM
   if(BPM < (bpmMedio * 0.85)) {
 
-
-    //Queda expressiva de 50%
-    if(BPM > (bpmMedio * 1.5)) { 
-      acompanhamentoExpressivo = 0;
-      controle = 0;//Variável para monitorar a variação nociva
-      movimento = detectaMovimento(movimento); //Reseta variáveis
-      temperatura = SensorTemp();
-      agitacao = detectaAgitacao();
-
-      //Monitoramento dedicado de 5 segundos armazenando 100 leituras
-      while ( controle < 100){             
-        acompanhamentoExpressivo= BPM + acompanhamentoExpressivo;
-        controle++;
-        delay(50);                            //delay de 50ms 
-      } //Fecha Monitoramento
-      
-      //Houve queda expressiva bpm
-      if (acompanhamentoExpressivo/100 <= bpmMedio * 0.65){
-
         //Aumento de 15% na taxa de movimento
         if (((movimento/((millis() - tempoAnterior)/1000))) >= (movimentoMedio * 1.15)){
 
@@ -979,47 +956,46 @@ void loop() {                  // responde com o dado recebido:
 
             //Aumento expressivo de temperatura
             if(temperatura >= temperaturaMedia * 1.15){
+              
+              //Agitação indiferente
+              Serial.println("Ansiedade detectada!");
+              ligaLed(pinoLedY);
+
+            }//Fecha aumento expressivo de temperatura
+            //Não houve aumento expressivo de temperatura
+            else{
 
               //Agitação
               if(detectaAgitacao() == true){
+                Serial.println("Felicidade detectada!");
+                ligaLed(pinoLedG);
 
               }//Fecha Agitação
               //Não agitou
             else{
-
+              Serial.println("Calmo");
+              ligaLed(pinoLedB);
 
             }//Fecha (else) Não agitou
-
-            }//Fecha aumento expressivo de temperatura
+              
+            }//Fecha não houve aumento expressivo de temperatura
           }//Fecha aumento de temperatura
 
           //Tolerância de temperatura
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação
-            //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
+            //Agitação Indiferente
+              Serial.println("Felicidade detectada!");
+              ligaLed(pinoLedB);
 
           }//Fecha Tolerância de temperatura
 
           //Queda de 5% na temperatura
           if (temperatura < temperaturaMedia * 0.95){
 
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação 
-            //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
+            //Agitação Indiferente
+            Serial.println("Calmo");
+            ligaLed(pinoLedB);
 
           }//Fecha Queda de temperatura
 
@@ -1036,34 +1012,38 @@ void loop() {                  // responde com o dado recebido:
 
             //Aumento expressivo de temperatura
             if(temperatura >= temperaturaMedia * 1.15){
+              Serial.println("Anomalia de leitura");
+              piscaLed(pinoLedR);
+
+
+            }//Fecha aumento expressivo de temperatura
+            //Não houve aumento expressivo de temperatura
+            else{
 
               //Agitação
               if(detectaAgitacao() == true){
+                Serial.println("Felicidade detectada!");
+              ligaLed(pinoLedB);
 
               }//Fecha Agitação
               //Não agitou
             else{
-
+              Serial.println("Calmo");
+              ligaLed(pinoLedB);
 
             }//Fecha (else) Não agitou
-
-            }//Fecha aumento expressivo de temperatura
+              
+            }//Fecha não houve aumento expressivo de temperatura
 
           }//Fecha aumento de temperatura
 
           //Tolerância de temperatura
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação
-            //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
-
+            //Agitação Indiferente
+            Serial.println("Calmo");
+            ligaLed(pinoLedB);
+              
           }//Fecha Tolerância de temperatura
 
           //Queda de 5% na temperatura
@@ -1071,10 +1051,17 @@ void loop() {                  // responde com o dado recebido:
 
             //Agitação
             if(detectaAgitacao() == true){
-
+              Serial.println("Calmo");
+              ligaLed(pinoLedB);
+              
             }//Fecha Agitação 
             //Não agitou
             else{
+              Serial.println("Tristeza detectada! (Experimental)");
+              piscaLed(pinoLedR);
+              digitalWrite(pinoLedB, 1);
+              digitalWrite(pinoLedY, 1);
+              delay(5000);
 
 
             }//Fecha (else) Não agitou
@@ -1094,95 +1081,27 @@ void loop() {                  // responde com o dado recebido:
 
             //Aumento expressivo de temperatura
             if(temperatura >= temperaturaMedia * 1.15){
-
-              //Agitação
-              if(detectaAgitacao() == true){
-
-              }//Fecha Agitação
-              //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
+              Serial.println("Anomalia de leitura");
+              piscaLed(pinoLedR);
 
             }//Fecha aumento expressivo de temperatura
+            //Não houve aumento expressivo de temperatura
+            else{
+              //Agitação Indiferente
+              Serial.println("Calmo");
+              ligaLed(pinoLedB);
+               
+            }//Fecha não houve aumento expressivo de temperatura
 
           }//Fecha aumento de temperatura
 
           //Tolerância de temperatura
           if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
 
-            //Agitação
-            if(detectaAgitacao() == true){
+            //Agitação Indiferente
 
-            }//Fecha Agitação
-            //Não agitou
-            else{
-
-
-            }//Fecha Não agitou
-          }//Fecha Tolerância de temperatura
-
-          //Queda de 5% na temperatura
-          if (temperatura < temperaturaMedia * 0.95){
-
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação 
-            //Não agitou
-            else{
-
-
-            }//Fecha Não agitou
-
-          }//Fecha Queda de temperatura
-
-        }//Fecha Queda no movimento
-
-      }//Fecha houve queda expressivo BPM
-
-
-      //Não Houve queda Expressivo
-      else{
-        //Aumento de 15% na taxa de movimento
-        if (((movimento/((millis() - tempoAnterior)/1000))) >= (movimentoMedio * 1.15)){
-
-
-          //Aumento de 5% na temperatura
-          if (temperatura > temperaturaMedia * 1.05){
-            movimento = detectaMovimento(movimento); //Reseta variáveis
-            temperatura = SensorTemp();
-            agitacao = detectaAgitacao(); 
-
-            //Aumento expressivo de temperatura
-            if(temperatura >= temperaturaMedia * 1.15){
-
-              //Agitação
-              if(detectaAgitacao() == true){
-
-              }//Fecha Agitação
-              //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
-
-            }//Fecha aumento expressivo de temperatura
-          }//Fecha aumento de temperatura
-
-          //Tolerância de temperatura
-          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
-
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação
-            //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
+              Serial.println("Calmo");
+              ligaLed(pinoLedB);
 
           }//Fecha Tolerância de temperatura
 
@@ -1191,125 +1110,18 @@ void loop() {                  // responde com o dado recebido:
 
             //Agitação
             if(detectaAgitacao() == true){
+              Serial.println("Calmo");
+              ligaLed(pinoLedB);
 
             }//Fecha Agitação 
             //Não agitou
             else{
-
-
-            }//Fecha (else) Não agitou
-
-          }//Fecha Queda de temperatura
-
-        }//Fecha aumento do movimento
-
-        //Tolerância de 15% no movimento
-        if(((movimento/((millis() - tempoAnterior)/1000)) < ((movimentoMedio * 1.15))) && (((movimento/((millis() - tempoAnterior)/1000)) >= (movimentoMedio * 0.85)))){          //Movimento/(millis() - tempoAnterior) é o movimento pelo tempo         
-
-          //Aumento de 5% na temperatura
-          if (temperatura > temperaturaMedia * 1.05){
-            movimento = detectaMovimento(movimento); //Reseta variáveis
-            temperatura = SensorTemp();
-            agitacao = detectaAgitacao(); 
-
-            //Aumento expressivo de temperatura
-            if(temperatura >= temperaturaMedia * 1.15){
-
-              //Agitação
-              if(detectaAgitacao() == true){
-
-              }//Fecha Agitação
-              //Não agitou
-            else{
-
-
-            }//Fecha Não agitou
-
-            }//Fecha aumento expressivo de temperatura
-
-          }//Fecha aumento de temperatura
-
-          //Tolerância de temperatura
-          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
-
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação
-            //Não agitou
-            else{
-
-
-            }//Fecha Não agitou
-          }//Fecha Tolerância de temperatura
-
-          //Queda de 5% na temperatura
-          if (temperatura < temperaturaMedia * 0.95){
-
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação 
-            //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
-
-          }//Fecha Queda de temperatura
-
-        }//Fecha Tolerância de movimento
-
-        //Queda no movimento
-        if (((movimento/((millis() - tempoAnterior)/1000))) < (movimentoMedio * 0.85)){
-
-          //Aumento de 5% na temperatura
-          if (temperatura > temperaturaMedia * 1.05){
-            movimento = detectaMovimento(movimento); //Reseta variáveis
-            temperatura = SensorTemp();
-            agitacao = detectaAgitacao(); 
-
-            //Aumento expressivo de temperatura
-            if(temperatura >= temperaturaMedia * 1.15){
-
-              //Agitação
-              if(detectaAgitacao() == true){
-
-              }//Fecha Agitação
-              //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
-
-            }//Fecha aumento expressivo de temperatura
-
-          }//Fecha aumento de temperatura
-
-          //Tolerância de temperatura
-          if ((temperatura >= temperaturaMedia * 0.95) && (temperatura <= temperaturaMedia * 1.05)){
-
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação
-            //Não agitou
-            else{
-
-
-            }//Fecha (else) Não agitou
-          }//Fecha Tolerância de temperatura
-
-          //Queda de 5% na temperatura
-          if (temperatura < temperaturaMedia * 0.95){
-
-            //Agitação
-            if(detectaAgitacao() == true){
-
-            }//Fecha Agitação 
-            //Não agitou
-            else{
-
+              Serial.println("Anomalia de leitura. Você está bem?");
+              piscaLed(pinoLedB);
+              digitalWrite(pinoLedB, 1);
+              digitalWrite(pinoLedY, 1);
+              digitalWrite(pinoLedG, 1);
+              delay(5000);
 
             }//Fecha (else) Não agitou
 
@@ -1317,12 +1129,6 @@ void loop() {                  // responde com o dado recebido:
 
         }//Fecha Queda no movimento
 
-
-      } //Fecha (else) não houve queda expressiva
-
-      
-    }//Fecha Queda Expressiva
-    
   }//Fecha Queda
   
 }//Fecha loop
