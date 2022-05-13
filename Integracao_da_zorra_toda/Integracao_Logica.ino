@@ -54,3 +54,17 @@ void piscaLed(int led){
     digitalWrite(led, 0);
     }
 }
+
+void ligaLed(int led){
+  
+  //desliga os leds
+  for(int i = 10; i <= 13; i++){
+    if(i == led){
+      digitalWrite(led, 1);
+    }
+    else{
+      digitaWrite(i, 0);
+    }
+  }
+    delay(3000);
+}
