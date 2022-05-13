@@ -20,31 +20,24 @@ float mediaBpm( int idade){
   int bpmVetor[100];
   float BpmMedio = 0.00;
   int conf = 0;
-  while (conf != 1){
-  if ((BPM > 40 && BPM < 150) && (controleBpm < 100)){                      //Limpar ruídos da medição
+  int soma = 0;
+  while (controleBpm < 100){
     bpmVetor[controleBpm] = BPM;
     controleBpm++;
-    conf = 1;
-      }
-      else{
-        Serial.println("Erro de leitura nos BPM: ");
-        Serial.print(BPM);                               
-      }
-         int soma = 0;
-         for(int i = 0; i<100; i++){
-           soma = soma + bpmVetor[i];
-         }
-         BpmMedio = soma/100;         //Média primária com 100 elementos       
-  }        
-       BpmMedio = (bpmIdade(idade) + BpmMedio)/2;   
-       return BpmMedio;
+    }   
+   for(int i = 0; i<100; i++){
+     soma = soma + bpmVetor[i];
+   }
+  BpmMedio = soma/100;         //Média primária com 100 elementos       
+  BpmMedio = (bpmIdade(idade) + BpmMedio)/2;   
+  return BpmMedio;
 }
 
 void piscaLed(int led){
   
   //desliga os leds
   for(int i = 10; i <= 13; i++){
-    digitaWrite(i, 0);
+    digitalWrite(i, 0);
   }
   
   //Pisca o led 20 vezes
@@ -63,7 +56,7 @@ void ligaLed(int led){
       digitalWrite(led, 1);
     }
     else{
-      digitaWrite(i, 0);
+      digitalWrite(i, 0);
     }
   }
     delay(3000);
