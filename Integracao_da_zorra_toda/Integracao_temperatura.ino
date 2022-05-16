@@ -5,19 +5,33 @@ Descrição: Código responsável pelo sensor de temperatura que tem como retorn
 leitura em tempo real em graus celsius de onde estiver sendo usado o sensor.
 */
 
-float TempAvg(int sensorPin){
+/*float TempAvg(int sensorPin){
   int total = 0;
   //digitalWrite(pinoLedR, 1);
  int amostras = 20;
   for (int i = 0; i <amostras; i++){
   total += analogRead(sensorPin);
   delay(20);  
+  Serial.println(total * 1100/10240);
   }
   return total/amostras;
-}
+}*/
 
 float SensorTemp() {
-  float temperatura = TempAvg(ADCPIN);
-  temperatura = temperatura * 1100/(1024*10);
-  return temperatura;
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+  int i = 0;
+  float total = 0;
+  while(i<40){
+    if((temp.temperature < 10) || (temp.temperature > 40)){
+      mpu.getEvent(&a, &g, &temp);
+      }
+      else{
+        total = total + temp.temperature;
+        i = i +1;
+        mpu.getEvent(&a, &g, &temp);
+        delay(15);
+      }
+  }
+  return (total/40);
 }

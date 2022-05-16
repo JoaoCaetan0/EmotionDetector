@@ -9,6 +9,7 @@ boolean detectaAgitacao(){
   boolean resposta;
   if(digitalRead(pinoMicroondas) == HIGH){      //SE LEITURA DO PINO FOR IGUAL A HIGH, FAZ
     resposta = true; //ACENDE O LED
+    Serial.println("Se mexeu né?");
   }
   else{ //SENÃO, FAZ
     resposta = false;  //APAGA O LED

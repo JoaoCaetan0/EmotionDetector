@@ -15,20 +15,26 @@ int bpmIdade(int idade){
   return bpmEsperado;
 }
 
-float mediaBpm( int idade){ 
+float mediaBpm(){ 
   int controleBpm = 0;
-  int bpmVetor[100];
+  int bpmVetor[30];
   float BpmMedio = 0.00;
   int conf = 0;
   int soma = 0;
-  while (controleBpm < 100){
-    bpmVetor[controleBpm] = BPM;
-    controleBpm++;
+  while (controleBpm < 30){
+    if (QS == true){
+      bpmVetor[controleBpm] = BPM;
+      controleBpm++;
+      Serial.print("BPM É: ");
+      Serial.println(BPM);
+      QS = false;
+      delay(20);
+      }
     }   
-   for(int i = 0; i<100; i++){
+   for(int i = 0; i<30; i++){
      soma = soma + bpmVetor[i];
    }
-  BpmMedio = soma/100;         //Média primária com 100 elementos       
+  BpmMedio = soma/30;         //Média primária com 30 elementos       
   BpmMedio = (bpmIdade(idade) + BpmMedio)/2;   
   return BpmMedio;
 }
@@ -59,5 +65,4 @@ void ligaLed(int led){
       digitalWrite(i, 0);
     }
   }
-    delay(3000);
 }

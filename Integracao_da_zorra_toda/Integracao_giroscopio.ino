@@ -5,6 +5,7 @@ char* convert_int16_to_str(int16_t i) { // converts int16 to string. Moreover, r
 
 int detectaMovimento(int movimento) { // Função que contabiliza quantos movimentos ocorreram
 
+
   Wire.beginTransmission(MPU_ADDR);
   Wire.write(0x3B); // starting with register 0x3B (ACCEL_XOUT_H) [MPU-6000 and MPU-6050 Register Map and Descriptions Revision 4.2, p.40]
   Wire.endTransmission(false); // the parameter indicates that the Arduino will send a restart. As a result, the connection is kept active.
@@ -19,7 +20,6 @@ int detectaMovimento(int movimento) { // Função que contabiliza quantos movime
   gyro_y = Wire.read()<<8 | Wire.read(); // reading registers: 0x45 (GYRO_YOUT_H) and 0x46 (GYRO_YOUT_L)
   gyro_z = Wire.read()<<8 | Wire.read(); // reading registers: 0x47 (GYRO_ZOUT_H) and 0x48 (GYRO_ZOUT_L)
 
-  //Serial.print("x: ");
   //Serial.println(accelerometer_x);
   //Serial.print("y: ");
   //Serial.println(accelerometer_y);
