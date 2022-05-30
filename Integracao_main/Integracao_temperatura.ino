@@ -18,20 +18,20 @@ leitura em tempo real em graus celsius de onde estiver sendo usado o sensor.
 }*/
 
 float SensorTemp() {
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  int i = 0;
+  sensors_event_t a, g, temp;          //Declaração de variáveis
+  mpu.getEvent(&a, &g, &temp);         //Recebe o valor dos eventos de leitura do sensor 
+  int i = 0; 
   float total = 0;
-  while(i<40){
+  while(i<40){                         //Testa 40 vezes
     if((temp.temperature < 10) || (temp.temperature > 40)){
       mpu.getEvent(&a, &g, &temp);
       }
       else{
-        total = total + temp.temperature;
+        total = total + temp.temperature;   //Atualiza total
         i = i +1;
         mpu.getEvent(&a, &g, &temp);
         delay(15);
       }
   }
-  return (total/40);
+  return (total/40);          //retorna média
 }
