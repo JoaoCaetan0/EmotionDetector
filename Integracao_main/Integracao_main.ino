@@ -13,8 +13,6 @@ const int pinoLedB = 10;
 
 unsigned long tempoAnterior = 0;
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////   // SENSOR CARDIACO //   //////////////////////////////////////////////////////////////////////////////
 
 
@@ -44,8 +42,6 @@ volatile int IBI = 600;                   // int que armazena os intervalos entr
 volatile boolean Pulse = false;           // "True" Quando uma batida é detectada. "False" quando não é
 volatile boolean QS = false;              // Recebe "True" quando uma batida é uma detectada.
 
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////     // FIM CARDIACO //   //////////////////////////////////////////////////////////////////
 
 
@@ -62,9 +58,7 @@ const int pinoMicroondas = 8; //PINO DIGITAL UTILIZADO PELO SENSOR
 
 int configuracao = 0;
 
-
 //////////////////////////////////////////////////////////////////////////////////////////    // GIROSCÓPIO //    ////////////////////////////////////////////////////////////////////////////
-
                           
 const int MPU_ADDR=0x68; // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
 
@@ -171,7 +165,6 @@ void loop() {                  // responde com o dado recebido
   //Aumento de 15% no batimento cardíaco
   if(BPM >= (bpmMedio * 1.15)) {  
 
-
     //Aumento expressivo de 50%
     if(BPM > (bpmMedio * 1.5)) {
       acompanhamentoExpressivo = 0;
@@ -187,13 +180,11 @@ void loop() {                  // responde com o dado recebido
         delay(50);                            //delay de 50ms 
       } //Fecha Monitoramento
 
-
       //Houve aumento expressivo bpm
       if (acompanhamentoExpressivo/100 >= bpmMedio * 1.45){
 
         //Aumento de 15% na taxa de movimento
         if (((movimento/((millis() - tempoAnterior))/1000)) >= (movimentoMedio * 1.15)){
-
 
           //Aumento de 5% na temperatura
           if (temperatura > temperaturaMedia * 1.05){
@@ -209,18 +200,15 @@ void loop() {                  // responde com o dado recebido
                 Serial.println("Sem emoção, apenas exercício físico!");
                 piscaLed(pinoLedR);
                 
-
               }//Fecha Agitação
               //Não agitou
             else{
               Serial.println("Aumento muito intenso de atividade corporal. Você está se exercitando?");
               piscaLed(pinoLedY);
 
-
             }//Fecha (else) Não agitou
-
-            }//Fecha aumento expressivo de temperatura
-            
+           }//Fecha aumento expressivo de temperatura
+        
             //Não houve aumento expressivo de temperatura
             else{
                //Agitação
@@ -236,7 +224,7 @@ void loop() {                  // responde com o dado recebido
 
             }//Fecha (else) Não agitou
               
-            }//Fecha não houve aumento expressivo de temperatura
+           }//Fecha não houve aumento expressivo de temperatura
           }//Fecha aumento de temperatura
 
           //Tolerância de temperatura
