@@ -19,7 +19,7 @@ unsigned long tempoAnterior = 0;
 
 
 int idade = 18;
-int tempo = 15000; //ms
+int tempo = 30000; //ms
 //int controleBpm = 0;              
 //int BpmAlto;                            // Batimento mais alto
 //int BpmBaixo;                           // Batimento mais baixo
@@ -125,15 +125,20 @@ void loop() {                  // responde com o dado recebido
     temperatura = SensorTemp();
     Serial.print("A temperatura é: ");
     Serial.println(temperatura);
-    agitacao = detectaAgitacao();      
-    while ((millis() - tempoAnterior) < tempo){       //Tempo = 15seg
+    agitacao = detectaAgitacao();   
+    int controleSegurador = 0;
+    float seguradorBpm = 0;
+    while ((millis() - tempoAnterior) < tempo){       //Tempo = 30seg
       movimento = detectaMovimento(movimento);
       //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
      bpmMedio = mediaBpm();                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
+     seguradorBpm = bpmMedio;
+     int controleSegurador = controleSegurador + 1;
      temperatura = SensorTemp();
      temperaturaMedia = temperatura; 
         // Passando pelo console
     }     
+    bpmMedio = seguradoBpm/controleSegurador;
     tempoAnterior= millis();
     Serial.println("Configurado com sucesso!");
     delay(2000); 
