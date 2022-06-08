@@ -1,102 +1,119 @@
-/* #include "WiFiEsp.h" //INCLUSÃO DA BIBLIOTECA
-#include "SoftwareSerial.h"//INCLUSÃO DA BIBLIOTECA
- 
-SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX E O PINO 7 É O TX
- 
-char ssid[] = "CaetanoWifi"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
-char pass[] = "<Senha>";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
- 
-int status = WL_IDLE_STATUS; //STATUS TEMPORÁRIO ATRIBUÍDO QUANDO O WIFI É INICIALIZADO E PERMANECE ATIVO
-//ATÉ QUE O NÚMERO DE TENTATIVAS EXPIRE (RESULTANDO EM WL_NO_SHIELD) OU QUE UMA CONEXÃO SEJA ESTABELECIDA
-//(RESULTANDO EM WL_CONNECTED)
- 
-WiFiEspServer server(80); //CONEXÃO REALIZADA NA PORTA 80
- 
-RingBuffer buf(8); //BUFFER PARA AUMENTAR A VELOCIDADE E REDUZIR A ALOCAÇÃO DE MEMÓRIA
- 
-int statusLed = LOW; //VARIÁVEL QUE ARMAZENA O ESTADO ATUAL DO LED (LIGADO / DESLIGADO)
- 
-void setup(){
-  pinMode(LED_BUILTIN, OUTPUT); //DEFINE O PINO COMO SAÍDA (LED_BUILTIN = PINO 13)
-  digitalWrite(LED_BUILTIN, LOW); //PINO 13 INICIA DESLIGADO
-  Serial.begin(9600); //INICIALIZA A SERIAL
-  Serial1.begin(9600); //INICIALIZA A SERIAL PARA O ESP8266
-  WiFi.init(&Serial1); //INICIALIZA A COMUNICAÇÃO SERIAL COM O ESP8266
-  WiFi.config(IPAddress(192,168,2,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
- 
-  //INÍCIO - VERIFICA SE O ESP8266 ESTÁ CONECTADO AO ARDUINO, CONECTA A REDE SEM FIO E INICIA O WEBSERVER
-  if(WiFi.status() == WL_NO_SHIELD){
-    while (true);
-  }
-  while(status != WL_CONNECTED){
-    status = WiFi.begin(ssid, pass);
-  }
+/* #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+
+/* Put your SSID & Password */
+/*const char* ssid = "NodeMCU";  // Enter SSID here
+const char* password = "12345678";  //Enter Password here
+
+/* Put IP Address details */
+/*IPAddress local_ip(192,168,1,1);
+IPAddress gateway(192,168,1,1);
+IPAddress subnet(255,255,255,0);
+
+ESP8266WebServer server(80);
+
+uint8_t LED1pin = 1;
+bool LED1status = LOW;
+
+uint8_t LED2pin = 0;
+bool LED2status = LOW;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED1pin, OUTPUT);
+  pinMode(LED2pin, OUTPUT);
+
+  WiFi.softAP(ssid, password);
+  WiFi.softAPConfig(local_ip, gateway, subnet);
+  delay(100);
+  
+  server.on("/", handle_OnConnect);
+  server.on("/led1on", handle_led1on);
+  server.on("/led1off", handle_led1off);
+  server.on("/led2on", handle_led2on);
+  server.on("/led2off", handle_led2off);
+  server.onNotFound(handle_NotFound);
+  
   server.begin();
-  //FIM - VERIFICA SE O ESP8266 ESTÁ CONECTADO AO ARDUINO, CONECTA A REDE SEM FIO E INICIA O WEBSERVER
+  Serial.println("HTTP server started");
 }
- 
-void loop(){
-  WiFiEspClient client = server.available(); //ATENDE AS SOLICITAÇÕES DO CLIENTE
- 
-  if (client) { //SE CLIENTE TENTAR SE CONECTAR, FAZ
-    buf.init(); //INICIALIZA O BUFFER
-    while (client.connected()){ //ENQUANTO O CLIENTE ESTIVER CONECTADO, FAZ
-      if(client.available()){ //SE EXISTIR REQUISIÇÃO DO CLIENTE, FAZ
-        char c = client.read(); //LÊ A REQUISIÇÃO DO CLIENTE
-        buf.push(c); //BUFFER ARMAZENA A REQUISIÇÃO
- 
-        //IDENTIFICA O FIM DA REQUISIÇÃO HTTP E ENVIA UMA RESPOSTA
-        if(buf.endsWith("\r\n\r\n")) {
-          sendHttpResponse(client);
-          break;
-        }
-        if(buf.endsWith("GET /H")){ //SE O PARÂMETRO DA REQUISIÇÃO VINDO POR GET FOR IGUAL A "H", FAZ 
-            digitalWrite(LED_BUILTIN, HIGH); //ACENDE O LED
-            statusLed = 1; //VARIÁVEL RECEBE VALOR 1(SIGNIFICA QUE O LED ESTÁ ACESO)
-        }
-        else{ //SENÃO, FAZ
-          if (buf.endsWith("GET /L")) { //SE O PARÂMETRO DA REQUISIÇÃO VINDO POR GET FOR IGUAL A "L", FAZ
-                  digitalWrite(LED_BUILTIN, LOW); //APAGA O LED
-                  statusLed = 0; //VARIÁVEL RECEBE VALOR 0(SIGNIFICA QUE O LED ESTÁ APAGADO)
-          }
-        }
-      }
-    }
-    client.stop(); //FINALIZA A REQUISIÇÃO HTTP E DESCONECTA O CLIENTE
-  }
-}
- 
-//MÉTODO DE RESPOSTA A REQUISIÇÃO HTTP DO CLIENTE
-void sendHttpResponse(WiFiEspClient client){
-  client.println("HTTP/1.1 200 OK"); //ESCREVE PARA O CLIENTE A VERSÃO DO HTTP
-  client.println("Content-Type: text/html"); //ESCREVE PARA O CLIENTE O TIPO DE CONTEÚDO(texto/html)
-  client.println("");
-  client.println("<!DOCTYPE HTML>"); //INFORMA AO NAVEGADOR A ESPECIFICAÇÃO DO HTML
-  client.println("<html>"); //ABRE A TAG "html"
-  client.println("<head>"); //ABRE A TAG "head"
-  client.println("<link rel='icon' type='image/png' href='https://blogmasterwalkershop.com.br/arquivos/artigos/sub_wifi/icon_mws.png'/>"); //DEFINIÇÃO DO ICONE DA PÁGINA
-  client.println("<link rel='stylesheet' type='text/css' href='https://blogmasterwalkershop.com.br/arquivos/artigos/sub_wifi/webpagecss.css' />"); //REFERENCIA AO ARQUIVO CSS (FOLHAS DE ESTILO)
-  client.println("<title>MasterWalker Shop - Adaptador Conector 3.3V / 5V para o Modulo WiFi ESP8266 ESP-01</title>"); //ESCREVE O TEXTO NA PÁGINA
-  client.println("</head>"); //FECHA A TAG "head"
+void loop() {
+  server.handleClient();
+  if(LED1status)
+  {digitalWrite(LED1pin, HIGH);}
+  else
+  {digitalWrite(LED1pin, LOW);}
   
-  //AS LINHAS ABAIXO CRIAM A PÁGINA HTML
-  client.println("<body>"); //ABRE A TAG "body"
-  client.println("<img alt='masterwalkershop' src='https://blogmasterwalkershop.com.br/arquivos/artigos/sub_wifi/logo_mws.png' height='156' width='700' />"); //LOGO DA MASTERWALKER SHOP
-  client.println("<p style='line-height:2'><font>Adaptador Conector 3.3V / 5V para o Modulo WiFi ESP8266 ESP-01</font></p>"); //ESCREVE O TEXTO NA PÁGINA
-  client.println("<font>ESTADO ATUAL DO LED</font>"); //ESCREVE O TEXTO NA PÁGINA
-  
-  if (statusLed == HIGH){ //SE VARIÁVEL FOR IGUAL A HIGH (1), FAZ
-    client.println("<p style='line-height:0'><font color='green'>LIGADO</font></p>"); //ESCREVE "LIGADO" NA PÁGINA
-    client.println("<a href=\"/L\">APAGAR</a>"); //COMANDO PARA APAGAR O LED (PASSA O PARÂMETRO /L)
-  }else{ //SENÃO, FAZ
-    if (statusLed == LOW){ //SE VARIÁVEL FOR IGUAL A LOW (0), FAZ
-    client.println("<p style='line-height:0'><font color='red'>DESLIGADO</font></p>"); //ESCREVE "DESLIGADO" NA PÁGINA
-    client.println("<a href=\"/H\">ACENDER</a>"); //COMANDO PARA ACENDER O LED (PASSA O PARÂMETRO /H)
-    }
-  }
-  client.println("<hr />"); //TAG HTML QUE CRIA UMA LINHA NA PÁGINA
-  client.println("<hr />"); //TAG HTML QUE CRIA UMA LINHA NA PÁGINA
-  client.println("</body>"); //FECHA A TAG "body"
-  client.println("</html>"); //FECHA A TAG "html"
-  delay(1); //INTERVALO DE 1 MILISSEGUNDO
+  if(LED2status)
+  {digitalWrite(LED2pin, HIGH);}
+  else
+  {digitalWrite(LED2pin, LOW);}
 }
+
+void handle_OnConnect() {
+  LED1status = LOW;
+  LED2status = LOW;
+  Serial.println("GPIO7 Status: OFF | GPIO6 Status: OFF");
+  server.send(200, "text/html", SendHTML(LED1status,LED2status)); 
+}
+
+void handle_led1on() {
+  LED1status = HIGH;
+  Serial.println("GPIO7 Status: ON");
+  server.send(200, "text/html", SendHTML(true,LED2status)); 
+}
+
+void handle_led1off() {
+  LED1status = LOW;
+  Serial.println("GPIO7 Status: OFF");
+  server.send(200, "text/html", SendHTML(false,LED2status)); 
+}
+
+void handle_led2on() {
+  LED2status = HIGH;
+  Serial.println("GPIO6 Status: ON");
+  server.send(200, "text/html", SendHTML(LED1status,true)); 
+}
+
+void handle_led2off() {
+  LED2status = LOW;
+  Serial.println("GPIO6 Status: OFF");
+  server.send(200, "text/html", SendHTML(LED1status,false)); 
+}
+
+void handle_NotFound(){
+  server.send(404, "text/plain", "Not found");
+}
+
+String SendHTML(uint8_t led1stat,uint8_t led2stat){
+  String ptr = "<!DOCTYPE html> <html>\n";
+  ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
+  ptr +="<title>LED Control</title>\n";
+  ptr +="<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}\n";
+  ptr +="body{margin-top: 50px;} h1 {color: #444444;margin: 50px auto 30px;} h3 {color: #444444;margin-bottom: 50px;}\n";
+  ptr +=".button {display: block;width: 80px;background-color: #1abc9c;border: none;color: white;padding: 13px 30px;text-decoration: none;font-size: 25px;margin: 0px auto 35px;cursor: pointer;border-radius: 4px;}\n";
+  ptr +=".button-on {background-color: #1abc9c;}\n";
+  ptr +=".button-on:active {background-color: #16a085;}\n";
+  ptr +=".button-off {background-color: #34495e;}\n";
+  ptr +=".button-off:active {background-color: #2c3e50;}\n";
+  ptr +="p {font-size: 14px;color: #888;margin-bottom: 10px;}\n";
+  ptr +="</style>\n";
+  ptr +="</head>\n";
+  ptr +="<body>\n";
+  ptr +="<h1>ESP8266 Web Server</h1>\n";
+  ptr +="<h3>Using Access Point(AP) Mode</h3>\n";
+  
+   if(led1stat)
+  {ptr +="<p>LED1 Status: ON</p><a class=\"button button-off\" href=\"/led1off\">OFF</a>\n";}
+  else
+  {ptr +="<p>LED1 Status: OFF</p><a class=\"button button-on\" href=\"/led1on\">ON</a>\n";}
+
+  if(led2stat)
+  {ptr +="<p>LED2 Status: ON</p><a class=\"button button-off\" href=\"/led2off\">OFF</a>\n";}
+  else
+  {ptr +="<p>LED2 Status: OFF</p><a class=\"button button-on\" href=\"/led2on\">ON</a>\n";}
+
+  ptr +="</body>\n";
+  ptr +="</html>\n";
+  return ptr;
+}*/

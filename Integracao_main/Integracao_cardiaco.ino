@@ -79,7 +79,7 @@ ISR(TIMER2_COMPA_vect){                         // triggered when Timer2 counts 
 
   //  NOW IT'S TIME TO LOOK FOR THE HEART BEAT
   // signal surges up in value every time there is a pulse
-  if (N > 250){                                   // avoid high frequency noise
+  if (N > 180){                                   // avoid high frequency noise
     if ( (Signal > thresh) && (Pulse == false) && (N > (IBI/5)*3) ){
       Pulse = true;                               // set the Pulse flag when we think there is a pulse
      // digitalWrite(blinkPin,HIGH);                // turn on pin 13 LED

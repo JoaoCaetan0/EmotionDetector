@@ -132,7 +132,7 @@ void loop() {                  // responde com o dado recebido
      temperaturaMedia = temperatura; 
         // Passando pelo console
     }     
-    bpmMedio = seguradoBpm/controleSegurador;
+    bpmMedio = seguradorBpm/controleSegurador;
     tempoAnterior= millis();
     Serial.println("Configurado com sucesso!");
     delay(2000); 
