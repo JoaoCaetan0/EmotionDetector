@@ -17,7 +17,7 @@ unsigned long tempoAnterior = 0;
 String emotion;         //Variável do módulo wifi!
 String exception = "Problema com a leitura! Não foi possível identificar a emoção de maneira confiável.";       //Variável de exceções do módulo wifi;
 
-/*#include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
 // Put your SSID & Password
@@ -33,7 +33,7 @@ ESP8266WebServer server(80);
 uint8_t LED1pin = 1;
 bool LED1status = LOW;
 uint8_t LED2pin = 0;
-bool LED2status = LOW;*/
+bool LED2status = LOW;
 
 /////////////////////////////////////////////////////////////////////////////////////   // SENSOR CARDIACO //   //////////////////////////////////////////////////////////////////////////////
 
@@ -129,7 +129,7 @@ void setup() {
   Wire.endTransmission(true);
   interruptSetup();
   
-  /*WiFi.softAP(ssid, password);
+  WiFi.softAP(ssid, password);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   delay(100);
   server.on("/", handle_OnConnect);
@@ -140,7 +140,7 @@ void setup() {
   server.onNotFound(handle_NotFound);
   
   server.begin();
-  Serial.println("HTTP server started");*/
+  Serial.println("HTTP server started");
 }
 
 void loop() {                  // responde com o dado recebido

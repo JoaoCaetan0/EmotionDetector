@@ -10,3 +10,7 @@ Respective models of each:
 - ESP01 8266
 
 All the components and the circuit can be visualized on the "Circuit_drawn.png" and "Circuit_Pictures.png". Also, there's another repository containing all the web-part of the project, including HTML, CSS and PHP.
+
+For initial configuration of ESP 8266, you need to copy this link: https://arduino.esp8266.com/stable/package_esp8266com_index.json
+
+Paste it on board manangement located on Arduino Ide <path>: File > Board Manangement > (paste on link section)
