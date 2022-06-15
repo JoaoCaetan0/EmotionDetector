@@ -16,5 +16,5 @@ For initial configuration of ESP 8266, you need to copy this link: https://ardui
 Paste it on board manangement located on Arduino Ide <path>: File > Board Manangement > (paste on link section)
   
  Then, go to: Tools > Board > Boards Mananger and search "esp8266". Download the suggested package as the image below
-  
-  [261_img_3_H](https://user-images.githubusercontent.com/77580555/173907246-41cd2f4e-0e15-4acc-9442-762b194913a3.png)
+  ![image](https://user-images.githubusercontent.com/77580555/173907763-dc7b64a2-d355-4b97-b880-a6d09d5bb2b9.png)
+
