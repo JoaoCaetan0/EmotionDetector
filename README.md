@@ -14,3 +14,7 @@ All the components and the circuit can be visualized on the "Circuit_drawn.png" 
 For initial configuration of ESP 8266, you need to copy this link: https://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 Paste it on board manangement located on Arduino Ide <path>: File > Board Manangement > (paste on link section)
+  
+ Then, go to: Tools > Board > Boards Mananger and search "esp8266". Download the suggested package as the image below
+  
+  [261_img_3_H](https://user-images.githubusercontent.com/77580555/173907246-41cd2f4e-0e15-4acc-9442-762b194913a3.png)
