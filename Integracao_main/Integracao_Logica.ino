@@ -39,6 +39,28 @@ float mediaBpm(){
   return BpmMedio;
 }
 
+float bpmAtual(){
+   int controleBpm = 0;
+  int bpmVetor[10];
+  float BpmMedio = 0.00;
+  int conf = 0;
+  int soma = 0;
+  while (controleBpm < 10){
+    if (QS == true){
+      bpmVetor[controleBpm] = BPM;
+      controleBpm++;
+      QS = false;
+      delay(5);
+      }
+    }   
+   for(int i = 0; i<10; i++){
+     soma = soma + bpmVetor[i];
+   }
+  BpmMedio = soma/10;         //Média em tempo real com 10 elementos       
+  BpmMedio = (bpmIdade(idade) + BpmMedio)/2;   
+  return BpmMedio;
+}
+
 void piscaLed(int led){
   
   //desliga os leds
@@ -65,4 +87,30 @@ void ligaLed(int led){
       digitalWrite(i, 0);
     }
   }
+}
+
+void emotionToString(int valor){
+  switch (valor){
+  case 1:
+    emotion = "Calma";
+    break;
+    
+  case 2:
+    emotion = "Felicidade";
+    break;
+    
+  case 3:
+    emotion = "Ansiedade";
+    break;
+    
+  case 4:
+    emotion = "Estresse";
+    break;
+
+  case 5:
+    emotion = exception;
+    break;
+    
+  }
+  
 }
