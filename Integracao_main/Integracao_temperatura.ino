@@ -23,15 +23,19 @@ float SensorTemp() {
   int i = 0; 
   float total = 0;
   while(i<40){                         //Testa 40 vezes
+    
     if((temp.temperature < 10) || (temp.temperature > 40)){
-      mpu.getEvent(&a, &g, &temp);
-      }
-      else{
+        Serial.println("Deu zica na temperatura");
+        Serial.println(temp.temperature);
+        delay(15);
+        mpu.getEvent(&a, &g, &temp);  
+    }
+      else{        
         total = total + temp.temperature;   //Atualiza total
         i = i +1;
         mpu.getEvent(&a, &g, &temp);
         delay(15);
+        }
       }
-  }
   return (total/40);          //retorna média
 }

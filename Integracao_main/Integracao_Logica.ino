@@ -22,7 +22,11 @@ float mediaBpm(){
   int conf = 0;
   int soma = 0;
   while (controleBpm < 30){
-    if (QS == true){
+     bpm();
+    if (BPM > 180 || BPM < 40){
+      QS = false;
+    }
+    else{
       bpmVetor[controleBpm] = BPM;
       controleBpm++;
       Serial.print("BPM É: ");
@@ -40,12 +44,16 @@ float mediaBpm(){
 }
 
 float bpmAtual(){
-   int controleBpm = 0;
+  int controleBpm = 0;
   int bpmVetor[10];
   float BpmMedio = 0.00;
   int conf = 0;
   int soma = 0;
   while (controleBpm < 10){
+     bpm();
+    if (BPM > 180 || BPM < 40){
+      QS = false;
+    }
     if (QS == true){
       bpmVetor[controleBpm] = BPM;
       controleBpm++;

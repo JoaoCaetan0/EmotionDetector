@@ -1,17 +1,17 @@
 
 void handle_OnConnect() {
-  //LED1status = LOW;
-  //LED2status = LOW;
-  //Serial.println("GPIO7 Status: OFF | GPIO6 Status: OFF");
-  //server.send(200, "text/html", SendHTML(LED1status,LED2status)); 
-  server.send(200, "text/html", SendHTMLStr(emotion));
-}
+  WiFiClient client = server.available(); //VERIFICA SE ALGUM CLIENTE ESTÁ CONECTADO NO SERVIDOR
+  if (!client) { //SE NÃO EXISTIR CLIENTE CONECTADO, FAZ
+  return; //REEXECUTA O PROCESSO ATÉ QUE ALGUM CLIENTE SE CONECTE AO SERVIDOR
+  }
+  Serial.println("Novo cliente se conectou!"); //ESCREVE O TEXTO NA SERIAL
+  while(!client.available()){ //ENQUANTO CLIENTE ESTIVER CONECTADO
+    delay(1); //INTERVALO DE 1 MILISEGUNDO
+  }
+  String request = client.readStringUntil('\r'); //FAZ A LEITURA DA PRIMEIRA LINHA DA REQUISIÇÃO
+  Serial.println(request); //ESCREVE A REQUISIÇÃO NA SERIAL
+  client.flush(); //AGUARDA ATÉ QUE TODOS OS DADOS DE SAÍDA SEJAM ENVIADOS AO CLIENTE
 
-void handle_NotFound(){
-  server.send(404, "text/plain", "Not found");
-}
-
-/*String SendHTML(uint8_t led1stat,uint8_t led2stat){
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
   ptr +="<title>LED Control</title>\n";
@@ -28,42 +28,21 @@ void handle_NotFound(){
   ptr +="<body>\n";
   ptr +="<h1>ESP8266 Web Server</h1>\n";
   ptr +="<h3>Using Access Point(AP) Mode</h3>\n";
+  ptr +="<h3>Current Emotion: " + emotion  + " </h3>\n";
+
+  ptr +="</body>\n";
+  ptr +="</html>\n";
   
-   if(led1stat)
-  {ptr +="<p>LED1 Status: ON</p><a class=\"button button-off\" href=\"/led1off\">OFF</a>\n";}
-  else
-  {ptr +="<p>LED1 Status: OFF</p><a class=\"button button-on\" href=\"/led1on\">ON</a>\n";}
-
-  if(led2stat)
-  {ptr +="<p>LED2 Status: ON</p><a class=\"button button-off\" href=\"/led2off\">OFF</a>\n";}
-  else
-  {ptr +="<p>LED2 Status: OFF</p><a class=\"button button-on\" href=\"/led2on\">ON</a>\n";}
-
-  ptr +="</body>\n";
-  ptr +="</html>\n";
-  return ptr;
-}*/
-
-String SendHTMLStr(String emotion){
-  String ptr = "<!DOCTYPE html> <html>\n";
-  ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
-  ptr +="<title>LED Control</title>\n";
-  ptr +="<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}\n";
-  ptr +="body{margin-top: 50px;} h1 {color: #444444;margin: 50px auto 30px;} h3 {color: #444444;margin-bottom: 50px;}\n";
-  ptr +=".button {display: block;width: 80px;background-color: #1abc9c;border: none;color: white;padding: 13px 30px;text-decoration: none;font-size: 25px;margin: 0px auto 35px;cursor: pointer;border-radius: 4px;}\n";
-  ptr +=".button-on {background-color: #1abc9c;}\n";
-  ptr +=".button-on:active {background-color: #16a085;}\n";
-  ptr +=".button-off {background-color: #34495e;}\n";
-  ptr +=".button-off:active {background-color: #2c3e50;}\n";
-  ptr +="p {font-size: 14px;color: #888;margin-bottom: 10px;}\n";
-  ptr +="</style>\n";
-  ptr +="</head>\n";
-  ptr +="<body>\n";
-  ptr +="<h1>ESP8266 Web Server</h1>\n";
-  ptr +="<h3>Using Access Point(AP) Mode</h3>\n";
-  ptr +="<p>Current Emotion: " + emotion  + " </p>\n";
-
-  ptr +="</body>\n";
-  ptr +="</html>\n";
-  return ptr;
+  client.println("HTTP/1.1 200 OK"); //ESCREVE PARA O CLIENTE A VERSÃO DO HTTP
+  client.println("Content-Type: text/html"); //ESCREVE PARA O CLIENTE O TIPO DE CONTEÚDO(texto/html)
+  client.println("");
+  client.println(ptr);
+  client.println("<!DOCTYPE HTML>"); //INFORMA AO NAVEGADOR A ESPECIFICAÇÃO DO HTML
+  client.println("<html>"); //ABRE A TAG "html"
+  client.println("<h1><center>EMOTION DETECTOR</center></h1>"); //ESCREVE "EMOTION DETECTOR" NA PÁGINA
+  client.println("<center><font size='5'>Seja bem vindo!</center>"); //ESCREVE "Seja bem vindo!" NA PÁGINA
+  client.println("</html>"); //FECHA A TAG "html"
+  delay(1); //INTERVALO DE 1 MILISEGUNDO
+  Serial.println("Cliente desconectado"); //ESCREVE O TEXTO NA SERIAL
+  Serial.println(""); //PULA UMA LINHA NA JANELA SERIAL
 }

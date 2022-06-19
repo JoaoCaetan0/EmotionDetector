@@ -5,35 +5,24 @@
 #include "wire_asukiaaa.h"
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
+#include <ESP8266WiFi.h> //INCLUSÃO DA BIBLIOTECA NECESSÁRIA PARA FUNCIONAMENTO DO CÓDIGO
 
-const int pinoLedG = 12;                   //PINO DIGITAL UTILIZADO PELO LED
-const int pinoLedY = 13;                   //PINO DIGITAL UTILIZADO PELO LED
-const int pinoLedR = 9;
-const int pinoLedB = 10;
+const int pinoLedG = D4;                   //PINO DIGITAL UTILIZADO PELO LED
+const int pinoLedY = D7;                   //PINO DIGITAL UTILIZADO PELO LED
+const int pinoLedR = D3;
+const int pinoLedB = D2;
 
 unsigned long tempoAnterior = 0;
 
 
-String emotion;         //Variável do módulo wifi!
+String emotion = "Configurando...";         //Variável do módulo wifi!
 String exception = "Problema com a leitura! Não foi possível identificar a emoção de maneira confiável.";       //Variável de exceções do módulo wifi;
 
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
 
-// Put your SSID & Password
-const char* ssid = "NodeMCU";  // Enter SSID here
-const char* password = "12345678";  //Enter Password here
+const char* ssid = "CaetanoWifi"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO EM QUE VAI CONECTAR
+const char* password = "J@um_pRed@0307"; //VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO EM QUE VAI CONECTAR
+WiFiServer server(80); //CASO OCORRA PROBLEMAS COM A PORTA 80, UTILIZE OUTRA (EX:8082,8089) E A CHAMADA DA URL FICARÁ IP:PORTA(EX: 192.168.0.15:8082)
 
-// Put IP Address details 
-IPAddress local_ip(192,168,1,1);
-IPAddress gateway(192,168,1,1);
-IPAddress subnet(255,255,255,0);
-
-ESP8266WebServer server(80);
-uint8_t LED1pin = 1;
-bool LED1status = LOW;
-uint8_t LED2pin = 0;
-bool LED2status = LOW;
 
 /////////////////////////////////////////////////////////////////////////////////////   // SENSOR CARDIACO //   //////////////////////////////////////////////////////////////////////////////
 
@@ -45,8 +34,8 @@ int tempo = 30000; //ms
 //int BpmBaixo;                           // Batimento mais baixo
 float bpmMedio;                             // Média entre o Batimento mais alto e o mais baixo
 
-int pulsePin = 0;                         // Cabo do sensor de batimentos conectado na porta analógica pin 0
-int fadePin = 5;                          // pin que esmaece
+int pulsePin = A0;                         // Cabo do sensor de batimentos conectado na porta analógica pin 0
+int fadePin = D8;                          // pin que esmaece
 int fadeRate = 0;                         // define a frequência de esmaecimento do LED
 static int outputType = SERIAL_PLOTTER;
 volatile int rate[10];                    // array to hold last ten IBI values
@@ -73,7 +62,7 @@ float temperatura = 0;
 float temperaturaMedia = 0;
 int movimento = 0;
 int movimentoMedio = 0;
-const int pinoMicroondas = 8; //PINO DIGITAL UTILIZADO PELO SENSOR
+const int pinoMicroondas = D1; //PINO DIGITAL UTILIZADO PELO SENSOR
 
                                             // Variáveis para testes
                         //int BpmH[10] = {150,80,70,0,0,0,0,0,0,0};     // Em teste
@@ -94,6 +83,11 @@ int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for acce
 int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
  int16_t temperature; // variables for temperature data
 
+
+const int sda_pin = D5; // definição do pino I2C SDA
+const int scl_pin = D6; // definição do pino I2C SCL
+
+
 #define LED_LB 2 // LED left bottom
 #define LED_RB 3 // LED right bottom
 #define LED_RT 4 // LED right top
@@ -101,10 +95,8 @@ int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
 
 char tmp_str[7]; // temporary variable used in convert function
 
-
+int contador = 0;
 //////////////////////////////////////////////////////////////////////////////////////////    // FIM GIROSCÓPIO //    ////////////////////////////////////////////////////////////////////////
-
-                          
 
 void setup() {
   pinMode(pinoLedR,OUTPUT);
@@ -122,30 +114,40 @@ void setup() {
   digitalWrite(LED_RB, LOW);
   digitalWrite(LED_RT, LOW);
   digitalWrite(LED_LT, LOW);
-  Wire.begin();
+  Wire.begin(sda_pin, scl_pin);
   Wire.beginTransmission(MPU_ADDR); // Begins a transmission to the I2C slave (GY-521 board)
   Wire.write(0x6B); // PWR_MGMT_1 register
   Wire.write(0); // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
-  interruptSetup();
   
-  WiFi.softAP(ssid, password);
-  WiFi.softAPConfig(local_ip, gateway, subnet);
-  delay(100);
-  server.on("/", handle_OnConnect);
-  server.on("/led1on", handle_led1on);
-  server.on("/led1off", handle_led1off);
-  server.on("/led2on", handle_led2on);
-  server.on("/led2off", handle_led2off);
-  server.onNotFound(handle_NotFound);
+  delay(10); //INTERVALO DE 10 MILISEGUNDOS
+  Serial.println(""); //PULA UMA LINHA NA JANELA SERIAL
+  Serial.println(""); //PULA UMA LINHA NA JANELA SERIAL
+  Serial.print("Conectando a "); //ESCREVE O TEXTO NA SERIAL
+  Serial.print(ssid); //ESCREVE O NOME DA REDE NA SERIAL
   
-  server.begin();
-  Serial.println("HTTP server started");
+  WiFi.begin(ssid, password); //PASSA OS PARÂMETROS PARA A FUNÇÃO QUE VAI FAZER A CONEXÃO COM A REDE SEM FIO
+  
+    while (WiFi.status() != WL_CONNECTED) { //ENQUANTO STATUS FOR DIFERENTE DE CONECTADO
+      delay(500); //INTERVALO DE 500 MILISEGUNDOS
+      Serial.print("."); //ESCREVE O CARACTER NA SERIAL
+    }
+  Serial.println(""); //PULA UMA LINHA NA JANELA SERIAL
+  Serial.print("Conectado a rede sem fio "); //ESCREVE O TEXTO NA SERIAL
+  Serial.println(ssid); //ESCREVE O NOME DA REDE NA SERIAL
+  server.begin(); //INICIA O SERVIDOR PARA RECEBER DADOS NA PORTA DEFINIDA EM "WiFiServer server(porta);"
+  Serial.println("Servidor iniciado"); //ESCREVE O TEXTO NA SERIAL
+  
+  Serial.print("IP para se conectar ao NodeMCU: "); //ESCREVE O TEXTO NA SERIAL
+  Serial.print("http://"); //ESCREVE O TEXTO NA SERIAL
+  Serial.println(WiFi.localIP()); //ESCREVE NA SERIAL O IP RECEBIDO DENTRO DA REDE SEM FIO (O IP NESSA PRÁTICA É RECEBIDO DE FORMA AUTOMÁTICA) 
+  handle_OnConnect();  
 }
 
 void loop() {                  // responde com o dado recebido
  
-  while(configuracao == 0){                     
+  while(configuracao == 0){
+    handle_OnConnect();                     
     Serial.println("Configurando...");
     digitalWrite(pinoLedY, 1);
     digitalWrite(pinoLedR, 1);
@@ -158,6 +160,7 @@ void loop() {                  // responde com o dado recebido
     int controleSegurador = 0;
     float seguradorBpm = 0;
     while ((millis() - tempoAnterior) < tempo){       //Tempo = 30seg
+      
       movimento = detectaMovimento(movimento);
       //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
      bpmMedio = mediaBpm();                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
