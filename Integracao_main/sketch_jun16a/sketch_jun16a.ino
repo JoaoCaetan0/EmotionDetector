@@ -14,7 +14,7 @@ PulseSensorPlayground pulseSensor;
 
 const char* ssid = "CaetanoWifi"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO EM QUE VAI CONECTAR
 const char* password = "J@um_pRed@0307"; //VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO EM QUE VAI CONECTAR
-String emotion = "Ansiedade";
+String emotion = "Configurando...";
 WiFiServer server(80); //CASO OCORRA PROBLEMAS COM A PORTA 80, UTILIZE OUTRA (EX:8082,8089) E A CHAMADA DA URL FICARÁ IP:PORTA(EX: 192.168.0.15:8082)
 
 void setup() {
@@ -75,43 +75,6 @@ Serial.println(WiFi.localIP()); //ESCREVE NA SERIAL O IP RECEBIDO DENTRO DA REDE
 void loop() {
   handle_OnConnect();
 
-
-for(int i = 0; i<10; i++){
-  delay(2000);
-  emotion = "Anger";
-  handle_OnConnect();
-  emotion = "Calm";
-  }
-  if (pulseSensor.sawNewSample()) {
-    /*
-       Every so often, send the latest Sample.
-       We don't print every sample, because our baud rate
-       won't support that much I/O.
-    */
-    if (--samplesUntilReport == (byte) 0) {
-      samplesUntilReport = SAMPLES_PER_SERIAL_SAMPLE;
-
-      pulseSensor.outputSample();
-
-      /*
-         At about the beginning of every heartbeat,
-         report the heart rate and inter-beat-interval.
-      */
-      if (pulseSensor.sawStartOfBeat()) {
-        pulseSensor.outputBeat();
-      }
-    }
-
-    /*******
-      Here is a good place to add code that could take up
-      to a millisecond or so to run.
-    *******/
-  }
-
-  /******
-     Don't add code here, because it could slow the sampling
-     from the PulseSensor.
-  ******/
 }
 void handle_OnConnect() {
   WiFiClient client = server.available(); //VERIFICA SE ALGUM CLIENTE ESTÁ CONECTADO NO SERVIDOR
@@ -128,7 +91,7 @@ void handle_OnConnect() {
 
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
-  ptr +="<title>LED Control</title>\n";
+  ptr +="<title>Emotion Detector</title>\n";
   ptr +="<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}\n";
   ptr +="body{margin-top: 50px;} h1 {color: #444444;margin: 50px auto 30px;} h3 {color: #444444;margin-bottom: 50px;}\n";
   ptr +=".button {display: block;width: 80px;background-color: #1abc9c;border: none;color: white;padding: 13px 30px;text-decoration: none;font-size: 25px;margin: 0px auto 35px;cursor: pointer;border-radius: 4px;}\n";

@@ -1,8 +1,13 @@
 
 void handle_OnConnect() {
-  WiFiClient client = server.available(); //VERIFICA SE ALGUM CLIENTE ESTÁ CONECTADO NO SERVIDOR
+  client = server.available(); //VERIFICA SE ALGUM CLIENTE ESTÁ CONECTADO NO SERVIDOR
   if (!client) { //SE NÃO EXISTIR CLIENTE CONECTADO, FAZ
-  return; //REEXECUTA O PROCESSO ATÉ QUE ALGUM CLIENTE SE CONECTE AO SERVIDOR
+    Serial.println("Aguardando cliente");
+    while(!client){
+      client = server.available(); //VERIFICA SE ALGUM CLIENTE ESTÁ CONECTADO NO SERVIDOR
+      delay(500);
+      Serial.print(". ");
+      }
   }
   Serial.println("Novo cliente se conectou!"); //ESCREVE O TEXTO NA SERIAL
   while(!client.available()){ //ENQUANTO CLIENTE ESTIVER CONECTADO
@@ -14,6 +19,8 @@ void handle_OnConnect() {
 
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
+  //ptr+="<script> setTimeout(function(){ window.location.reload(1);}, 10000); \n";
+  //ptr +="</script>\n";
   ptr +="<title>LED Control</title>\n";
   ptr +="<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}\n";
   ptr +="body{margin-top: 50px;} h1 {color: #444444;margin: 50px auto 30px;} h3 {color: #444444;margin-bottom: 50px;}\n";
@@ -29,6 +36,7 @@ void handle_OnConnect() {
   ptr +="<h1>ESP8266 Web Server</h1>\n";
   ptr +="<h3>Using Access Point(AP) Mode</h3>\n";
   ptr +="<h3>Current Emotion: " + emotion  + " </h3>\n";
+ 
 
   ptr +="</body>\n";
   ptr +="</html>\n";

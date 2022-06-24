@@ -22,21 +22,18 @@ float mediaBpm(){
   int conf = 0;
   int soma = 0;
   while (controleBpm < 30){
-     bpm();
-    if (BPM > 180 || BPM < 40){
-      QS = false;
-    }
-    else{
+     bpm();    
+      
       bpmVetor[controleBpm] = BPM;
       controleBpm++;
       Serial.print("BPM É: ");
       Serial.println(BPM);
       QS = false;
       delay(20);
-      }
     }   
    for(int i = 0; i<30; i++){
      soma = soma + bpmVetor[i];
+      
    }
   BpmMedio = soma/30;         //Média primária com 30 elementos       
   BpmMedio = (bpmIdade(idade) + BpmMedio)/2;   
@@ -50,10 +47,8 @@ float bpmAtual(){
   int conf = 0;
   int soma = 0;
   while (controleBpm < 10){
+     
      bpm();
-    if (BPM > 180 || BPM < 40){
-      QS = false;
-    }
     if (QS == true){
       bpmVetor[controleBpm] = BPM;
       controleBpm++;
@@ -62,6 +57,7 @@ float bpmAtual(){
       }
     }   
    for(int i = 0; i<10; i++){
+     
      soma = soma + bpmVetor[i];
    }
   BpmMedio = soma/10;         //Média em tempo real com 10 elementos       
@@ -120,5 +116,6 @@ void emotionToString(int valor){
     break;
     
   }
+   
   
 }

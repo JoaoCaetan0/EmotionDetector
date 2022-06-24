@@ -7,6 +7,8 @@
 #include <Adafruit_Sensor.h>
 #include <ESP8266WiFi.h> //INCLUSÃO DA BIBLIOTECA NECESSÁRIA PARA FUNCIONAMENTO DO CÓDIGO
 
+
+
 const int pinoLedG = D4;                   //PINO DIGITAL UTILIZADO PELO LED
 const int pinoLedY = D7;                   //PINO DIGITAL UTILIZADO PELO LED
 const int pinoLedR = D3;
@@ -22,13 +24,13 @@ String exception = "Problema com a leitura! Não foi possível identificar a emo
 const char* ssid = "CaetanoWifi"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO EM QUE VAI CONECTAR
 const char* password = "J@um_pRed@0307"; //VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO EM QUE VAI CONECTAR
 WiFiServer server(80); //CASO OCORRA PROBLEMAS COM A PORTA 80, UTILIZE OUTRA (EX:8082,8089) E A CHAMADA DA URL FICARÁ IP:PORTA(EX: 192.168.0.15:8082)
-
+WiFiClient client = server.available(); //VERIFICA SE ALGUM CLIENTE ESTÁ CONECTADO NO SERVIDOR
 
 /////////////////////////////////////////////////////////////////////////////////////   // SENSOR CARDIACO //   //////////////////////////////////////////////////////////////////////////////
 
 
 int idade = 18;
-int tempo = 30000; //ms
+int tempo = 10000; //ms
 //int controleBpm = 0;              
 //int BpmAlto;                            // Batimento mais alto
 //int BpmBaixo;                           // Batimento mais baixo
@@ -140,14 +142,18 @@ void setup() {
   
   Serial.print("IP para se conectar ao NodeMCU: "); //ESCREVE O TEXTO NA SERIAL
   Serial.print("http://"); //ESCREVE O TEXTO NA SERIAL
-  Serial.println(WiFi.localIP()); //ESCREVE NA SERIAL O IP RECEBIDO DENTRO DA REDE SEM FIO (O IP NESSA PRÁTICA É RECEBIDO DE FORMA AUTOMÁTICA) 
-  handle_OnConnect();  
+  Serial.println(WiFi.localIP()); //ESCREVE NA SERIAL O IP RECEBIDO DENTRO DA REDE SEM FIO (O IP NESSA PRÁTICA É RECEBIDO DE FORMA AUTOMÁTICA)  
 }
 
-void loop() {                  // responde com o dado recebido
- 
-  while(configuracao == 0){
-    handle_OnConnect();                     
+void loop() {
+  handle_OnConnect();
+    digitalWrite(pinoLedY, 1);
+    digitalWrite(pinoLedR, 1);
+    digitalWrite(pinoLedG, 1);
+    digitalWrite(pinoLedB, 1);
+      
+      delay(1000);
+      while(configuracao == 0){                  
     Serial.println("Configurando...");
     digitalWrite(pinoLedY, 1);
     digitalWrite(pinoLedR, 1);
@@ -160,17 +166,14 @@ void loop() {                  // responde com o dado recebido
     int controleSegurador = 0;
     float seguradorBpm = 0;
     while ((millis() - tempoAnterior) < tempo){       //Tempo = 30seg
-      
       movimento = detectaMovimento(movimento);
       //Movimento médio é a taxa de movimento por segundo (Fórmula = dM/dT)
-     bpmMedio = mediaBpm();                        //Chama função que calcula Média dos valores lidos com o esperado pela idade
-     seguradorBpm = bpmMedio;
-     int controleSegurador = controleSegurador + 1;
+                      //Chama função que calcula Média dos valores lidos com o esperado pela idade
      temperatura = SensorTemp();
      temperaturaMedia = temperatura; 
         // Passando pelo console
-    }     
-    bpmMedio = seguradorBpm/controleSegurador;
+    }        
+    bpmMedio = mediaBpm();    
     tempoAnterior= millis();
     Serial.println("Configurado com sucesso!");
     delay(2000); 
@@ -189,20 +192,19 @@ void loop() {                  // responde com o dado recebido
     Serial.println(temperaturaMedia);
     configuracao = 1;                  
   }
-  Serial.print("BPM É:");
+    Serial.print("BPM É:");
   Serial.print(bpmAtual()); 
   Serial.print("Temperatura É:");
   temperatura = SensorTemp();
-  Serial.println(temperatura);
-  //====================================== Árvore de decisões ======================================================
-  //Árvore Re-formatada
+  Serial.println(temperatura);  
+
+              //====================================== Estrutura de decisões ======================================================
 
   float acompanhamentoExpressivo = 0;
   int controle = 0;//Variável para monitorar a variação nociva
-
+       
   //Aumento de 15% no batimento cardíaco
   if((BPM = bpmAtual()) >= (bpmMedio * 1.15)) {  
-
     //Aumento expressivo de 50%
     if((BPM = bpmAtual()) > (bpmMedio * 1.5)) { 
       acompanhamentoExpressivo = 0;
@@ -252,13 +254,13 @@ void loop() {                  // responde com o dado recebido
                //Agitação
               if(detectaAgitacao() == true){
                 Serial.println("Ansiedade detectada!");
-                ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+                ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
               }//Fecha Agitação
               //Não agitou
             else{
               Serial.println("Estresse detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
 
             }//Fecha (else) Não agitou
               
@@ -271,13 +273,13 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Estresse detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
 
             }//Fecha Agitação
             //Não agitou
             else{
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
 
             }//Fecha (else) Não agitou
@@ -290,13 +292,13 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade detectada!");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+              ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
 
             }//Fecha (else) Não agitou
@@ -319,7 +321,7 @@ void loop() {                  // responde com o dado recebido
 
               //Agitação indiferente
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
               
             }//Fecha aumento expressivo de temperatura
             
@@ -328,13 +330,13 @@ void loop() {                  // responde com o dado recebido
               //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade detectada!");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+              ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
             }//Fecha (else) Não agitou
             }//Fecha não houve aumento expressivo
@@ -347,13 +349,13 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade detectada!");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+              ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
             }//Fecha Agitação
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
             }//Fecha (else) Não agitou
 
@@ -364,7 +366,7 @@ void loop() {                  // responde com o dado recebido
 
             //Agitação Indiferente
             Serial.println("Calmo");
-            ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+            ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
           }//Fecha Queda de temperatura
 
@@ -385,13 +387,13 @@ void loop() {                  // responde com o dado recebido
               //Agitação
               if(detectaAgitacao() == true){
                 Serial.println("Ansiedade detectada!");
-                ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+                ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
               }//Fecha Agitação
               //Não agitou
             else{
               Serial.println("Estresse detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
             }//Fecha (else) Não agitou
 
             }//Fecha aumento expressivo de temperatura
@@ -401,7 +403,7 @@ void loop() {                  // responde com o dado recebido
             
             //Agitação Indiferente
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
             
             }//Fechaa não Houve aumento expressivo de temperatura
           }//Fecha aumento de temperatura
@@ -412,13 +414,13 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
             }//Fecha Agitação
             //Não agitou
             else{
               Serial.println("Estresse detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
 
             }//Fecha Não agitou
           }//Fecha Tolerância de temperatura
@@ -428,7 +430,7 @@ void loop() {                  // responde com o dado recebido
 
             //Agitação Indiferente
             Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
           }//Fecha Queda de temperatura
 
@@ -454,13 +456,13 @@ void loop() {                  // responde com o dado recebido
               //Agitação
               if(detectaAgitacao() == true){
                 Serial.println("Ansiedade detectada!");
-                ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+                ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
               }//Fecha Agitação
               //Não agitou
             else{
               Serial.println("Estresse detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
 
             }//Fecha (else) Não agitou
 
@@ -471,13 +473,13 @@ void loop() {                  // responde com o dado recebido
               
               if(detectaAgitacao() == true){
                 Serial.println("Felicidade detectada!");
-                ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+                ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
               }//Fecha Agitação
               //Não agitou
             else{
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
             }//Fecha (else) Não agitou
               }//Fecha não houve aumento expressivo de temperatura
@@ -488,7 +490,7 @@ void loop() {                  // responde com o dado recebido
 
             //Agitação indiferente
               Serial.println("Felicidade detectada!");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+              ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
           }//Fecha Tolerância de temperatura
 
@@ -498,13 +500,13 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
             }//Fecha (else) Não agitou
 
@@ -526,7 +528,7 @@ void loop() {                  // responde com o dado recebido
 
               //Agitação
               Serial.println("Estresse detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
 
             }//Fecha aumento expressivo de temperatura
             //Não houve aumento expressivo de temperatura
@@ -535,13 +537,13 @@ void loop() {                  // responde com o dado recebido
               //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade detectada!");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+              ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Estresse detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
 
             }//Fecha (else) Não agitou
               }//Fecha não houve aumento expressivo de temperatura
@@ -554,13 +556,13 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
 
             }//Fecha Agitação
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
             }//Fecha Não agitou
           }//Fecha Tolerância de temperatura
@@ -571,13 +573,13 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade detectada");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+              ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
             }//Fecha (else) Não agitou
 
@@ -599,7 +601,7 @@ void loop() {                  // responde com o dado recebido
 
               //Agitação indiferente
               Serial.println("Estresse detectado!");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect();
+              ligaLed(pinoLedR); delay(5000); emotionToString(4); 
 
             }//Fecha aumento expressivo de temperatura
 
@@ -609,13 +611,13 @@ void loop() {                  // responde com o dado recebido
               //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade detectada");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+              ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
             }//Fecha (else) Não agitou
               }//Fecha não houve aumento expressivo de temperatura
@@ -627,13 +629,13 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade detectada!");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+              ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
             }//Fecha Agitação
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
 
             }//Fecha (else) Não agitou
@@ -645,12 +647,12 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
 
             }//Fecha (else) Não agitou
@@ -690,7 +692,7 @@ void loop() {                  // responde com o dado recebido
               if(detectaAgitacao() == true){
                 
               Serial.println("Estresse");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect(); //Acende o Led Vermelho
+              ligaLed(pinoLedR); delay(5000); emotionToString(4);  //Acende o Led Vermelho
               //Liga o Led
 
               }//Fecha Agitação
@@ -698,7 +700,7 @@ void loop() {                  // responde com o dado recebido
             else{
               
               Serial.println("Ansiedade");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect(); //Acende o Led Amarelo
+              ligaLed(pinoLedY); delay(5000); emotionToString(3);  //Acende o Led Amarelo
               //Liga o Led
 
             }//Fecha (else) Não agitou
@@ -712,7 +714,7 @@ void loop() {                  // responde com o dado recebido
               if(detectaAgitacao() == true){
                 
               Serial.println("Ansieade");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect(); //Acende o Led Amarelo
+              ligaLed(pinoLedY); delay(5000); emotionToString(3);  //Acende o Led Amarelo
               //Liga o Led
 
               }//Fecha Agitação
@@ -720,7 +722,7 @@ void loop() {                  // responde com o dado recebido
             else{
               
               Serial.println("Estresse");
-              ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect(); //Acende o Led Vermelho
+              ligaLed(pinoLedR); delay(5000); emotionToString(4);  //Acende o Led Vermelho
               //Liga o Led
 
             }//Fecha (else) Não agitou
@@ -734,14 +736,14 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Azul
+              ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Azul
               //Liga o Led
 
             }//Fecha Agitação
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Azul
+              ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Azul
               //Liga o Led
 
             }//Fecha (else) Não agitou
@@ -754,14 +756,14 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade");
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect(); //Acende o Led Verde
+              ligaLed(pinoLedG); delay(5000); emotionToString(2);  //Acende o Led Verde
               //Liga o Led
 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Azul
+              ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Azul
               //Liga o Led
 
             }//Fecha (else) Não agitou
@@ -786,7 +788,7 @@ void loop() {                  // responde com o dado recebido
               if(detectaAgitacao() == true){
                 Serial.println("Estresse");
                 Serial.println();
-                ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect(); //Acende o Led Vermelho
+                ligaLed(pinoLedR); delay(5000); emotionToString(4);  //Acende o Led Vermelho
                 //Liga o Led
 
               }//Fecha Agitação
@@ -794,7 +796,7 @@ void loop() {                  // responde com o dado recebido
               else{
                 Serial.println("Ansiedade");
                 Serial.println();
-                ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect(); //Acende o Led Amarelo
+                ligaLed(pinoLedY); delay(5000); emotionToString(3);  //Acende o Led Amarelo
                 //Liga o Led
 
 
@@ -810,7 +812,7 @@ void loop() {                  // responde com o dado recebido
                 
               Serial.println("Felicidade");
               Serial.println();
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect(); //Acende o Led Verde
+              ligaLed(pinoLedG); delay(5000); emotionToString(2);  //Acende o Led Verde
               //Liga o Led
 
               }//Fecha Agitação
@@ -819,7 +821,7 @@ void loop() {                  // responde com o dado recebido
               
               Serial.println("Ansiedade");
               Serial.println();
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect(); //Acende o Led Amarelo
+              ligaLed(pinoLedY); delay(5000); emotionToString(3);  //Acende o Led Amarelo
               //Liga o Led
 
             }//Fecha (else) Não agitou
@@ -835,7 +837,7 @@ void loop() {                  // responde com o dado recebido
             if(detectaAgitacao() == true){
               Serial.println("Felicidade");
               Serial.println();
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect(); //Acende o Led Verde
+              ligaLed(pinoLedG); delay(5000); emotionToString(2);  //Acende o Led Verde
               //Liga o Led
 
             }//Fecha Agitação
@@ -843,7 +845,7 @@ void loop() {                  // responde com o dado recebido
             else{
              Serial.println("Calmo");
              Serial.println();
-             ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Azul
+             ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Azul
               //Liga o Led
 
 
@@ -856,7 +858,7 @@ void loop() {                  // responde com o dado recebido
             //Agitação Indiferente neste caso
              Serial.println("Calmo");
              Serial.println();
-             ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Azul
+             ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Azul
              //Liga o Led
 
           }//Fecha Queda de temperatura
@@ -880,7 +882,7 @@ void loop() {                  // responde com o dado recebido
               if(detectaAgitacao() == true){
                 Serial.println("Ansiedade");
                 Serial.println();
-                ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect(); //Acende o Led Amarelo
+                ligaLed(pinoLedY); delay(5000); emotionToString(3);  //Acende o Led Amarelo
                 //Liga o Led
 
               }//Fecha Agitação
@@ -890,8 +892,8 @@ void loop() {                  // responde com o dado recebido
                Serial.println();
                
                for (int i = 0; i< 20; i++) {      //Pisca os LEDS Durante 10Segundos
-                 ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect(); //Acende o Led Amarelo
-                 ligaLed(pinoLedR); delay(5000); emotionToString(4); handle_OnConnect(); //Acende o Led Vermelho
+                 ligaLed(pinoLedY); delay(5000); emotionToString(3);  //Acende o Led Amarelo
+                 ligaLed(pinoLedR); delay(5000); emotionToString(4);  //Acende o Led Vermelho
                  delay(500);
                  digitalWrite(pinoLedY, LOW); //Acende o Led Amarelo
                  digitalWrite(pinoLedR, LOW); //Acende o Led Vermelho
@@ -915,7 +917,7 @@ void loop() {                  // responde com o dado recebido
                 
               Serial.println("Felicidade");
               Serial.println();
-              ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect(); //Acende o Led Verde
+              ligaLed(pinoLedG); delay(5000); emotionToString(2);  //Acende o Led Verde
               //Liga o Led
 
               }//Fecha Agitação
@@ -923,7 +925,7 @@ void loop() {                  // responde com o dado recebido
             else{
               
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Azul
+              ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Azul
               //Liga o Led
 
             }//Fecha (else) Não agitou
@@ -937,7 +939,7 @@ void loop() {                  // responde com o dado recebido
 
             //Agitação Indiferente neste caso
             Serial.println("Calmo");
-            ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Azul
+            ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Azul
             //Liga o Led
 
             
@@ -949,14 +951,14 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Felicidade");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Verde
+              ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Verde
               //Liga o Led
 
             }//Fecha Agitação 
             //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect(); //Acende o Led Azul
+              ligaLed(pinoLedB); delay(5000); emotionToString(1);  //Acende o Led Azul
               //Liga o Led
               
             }//Fecha Não agitou
@@ -990,7 +992,7 @@ void loop() {                  // responde com o dado recebido
               
               //Agitação indiferente
               Serial.println("Ansiedade detectada!");
-              ligaLed(pinoLedY); delay(5000); emotionToString(3); handle_OnConnect();
+              ligaLed(pinoLedY); delay(5000); emotionToString(3); 
 
             }//Fecha aumento expressivo de temperatura
             //Não houve aumento expressivo de temperatura
@@ -999,13 +1001,13 @@ void loop() {                  // responde com o dado recebido
               //Agitação
               if(detectaAgitacao() == true){
                 Serial.println("Felicidade detectada!");
-                ligaLed(pinoLedG); delay(5000); emotionToString(2); handle_OnConnect();
+                ligaLed(pinoLedG); delay(5000); emotionToString(2); 
 
               }//Fecha Agitação
               //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
             }//Fecha (else) Não agitou
               
@@ -1017,7 +1019,7 @@ void loop() {                  // responde com o dado recebido
 
             //Agitação Indiferente
               Serial.println("Felicidade detectada!");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
           }//Fecha Tolerância de temperatura
 
@@ -1026,7 +1028,7 @@ void loop() {                  // responde com o dado recebido
 
             //Agitação Indiferente
             Serial.println("Calmo");
-            ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+            ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
           }//Fecha Queda de temperatura
 
@@ -1054,13 +1056,13 @@ void loop() {                  // responde com o dado recebido
               //Agitação
               if(detectaAgitacao() == true){
                 Serial.println("Felicidade detectada!");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
               }//Fecha Agitação
               //Não agitou
             else{
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
             }//Fecha (else) Não agitou
               
@@ -1073,7 +1075,7 @@ void loop() {                  // responde com o dado recebido
 
             //Agitação Indiferente
             Serial.println("Calmo");
-            ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+            ligaLed(pinoLedB); delay(5000); emotionToString(1); 
               
           }//Fecha Tolerância de temperatura
 
@@ -1083,7 +1085,7 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
               
             }//Fecha Agitação 
             //Não agitou
@@ -1117,7 +1119,7 @@ void loop() {                  // responde com o dado recebido
             else{
               //Agitação Indiferente
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
                
             }//Fecha não houve aumento expressivo de temperatura
 
@@ -1129,7 +1131,7 @@ void loop() {                  // responde com o dado recebido
             //Agitação Indiferente
 
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
           }//Fecha Tolerância de temperatura
 
@@ -1139,7 +1141,7 @@ void loop() {                  // responde com o dado recebido
             //Agitação
             if(detectaAgitacao() == true){
               Serial.println("Calmo");
-              ligaLed(pinoLedB); delay(5000); emotionToString(1); handle_OnConnect();
+              ligaLed(pinoLedB); delay(5000); emotionToString(1); 
 
             }//Fecha Agitação 
             //Não agitou
@@ -1157,5 +1159,7 @@ void loop() {                  // responde com o dado recebido
         }//Fecha Queda no movimento
 
   }//Fecha Queda
-  
-}//Fecha loop
+
+
+}
+//Fecha loop
